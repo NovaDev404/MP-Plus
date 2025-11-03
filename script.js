@@ -180,7 +180,7 @@
         const panel = document.createElement('div');
         panel.id = 'mp-desmos-panel';
         panel.style.cssText = `
-            position:fixed;left:12px;top:12px;width:320px;height:400px;z-index:2147483648;
+            position:fixed;left:12px;top:12px;width:420px;height:500px;z-index:2147483648;
             background:#fff;color:#111;border-radius:8px;border:1px solid #bbb;
             box-shadow:0 8px 30px rgba(0,0,0,.4);font-family:Arial,Helvetica,sans-serif;
             box-sizing:border-box;user-select:none;padding:0;overflow:hidden;
