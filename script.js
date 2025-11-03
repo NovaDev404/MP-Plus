@@ -219,20 +219,6 @@
         desmosContainer.style.cssText = 'width:100%;height:100%;border-radius:6px;overflow:hidden;';
         body.appendChild(desmosContainer);
         panel.appendChild(body);
-
-        // --- RESIZER (bottom-right) ---
-        const resizer = document.createElement('div');
-        resizer.id = 'mp-desmos-resizer';
-        resizer.style.cssText = `
-            position:absolute;right:6px;bottom:6px;width:18px;height:18px;
-            border-radius:4px;cursor:nwse-resize;z-index:2147483649;
-            display:flex;align-items:center;justify-content:center;opacity:.75;
-            background:linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.06));
-        `;
-        resizer.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="opacity:.7"><path d="M3 12 L12 3 M6 12 L12 6 M9 12 L12 9" stroke="#333" stroke-width="1.2" stroke-linecap="round"/></svg>`;
-
-        panel.appendChild(resizer);
-
         document.body.appendChild(panel);
 
         if (typeof draggable === 'function') {
@@ -279,72 +265,6 @@
                 });
             })();
         }
-
-        // --- Resizer logic ---
-        (function makeResizable(elPanel, handleEl) {
-            let isResizing = false;
-            let startX = 0, startY = 0, startW = 0, startH = 0;
-            const minW = 220, minH = 200, maxW = window.innerWidth - 20, maxH = window.innerHeight - 20;
-
-            const onMove = (e) => {
-                if (!isResizing) return;
-                const clientX = (e.clientX !== undefined) ? e.clientX : (e.touches && e.touches[0] && e.touches[0].clientX);
-                const clientY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] && e.touches[0].clientY);
-                if (clientX == null) return;
-                let newW = Math.max(minW, Math.min(maxW, startW + (clientX - startX)));
-                let newH = Math.max(minH, Math.min(maxH, startH + (clientY - startY)));
-                elPanel.style.width = newW + 'px';
-                elPanel.style.height = newH + 'px';
-                elPanel.style.right = ''; // allow left to control position after resize
-                try { if (window.__mp_desmos_instance && typeof window.__mp_desmos_instance.update === 'function') window.__mp_desmos_instance.update(); } catch(_) {}
-            };
-
-            const onUp = () => {
-                if (!isResizing) return;
-                isResizing = false;
-                document.removeEventListener('mousemove', onMove);
-                document.removeEventListener('mouseup', onUp);
-                document.removeEventListener('touchmove', onMove);
-                document.removeEventListener('touchend', onUp);
-                handleEl.style.cursor = 'nwse-resize';
-            };
-
-            handleEl.addEventListener('mousedown', (e) => {
-                isResizing = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                const r = elPanel.getBoundingClientRect();
-                startW = r.width;
-                startH = r.height;
-                document.addEventListener('mousemove', onMove);
-                document.addEventListener('mouseup', onUp);
-                handleEl.style.cursor = 'nwse-resize';
-                e.preventDefault();
-            });
-
-            handleEl.addEventListener('touchstart', (e) => {
-                isResizing = true;
-                const t = e.touches[0];
-                startX = t.clientX;
-                startY = t.clientY;
-                const r = elPanel.getBoundingClientRect();
-                startW = r.width;
-                startH = r.height;
-                document.addEventListener('touchmove', onMove, {passive:false});
-                document.addEventListener('touchend', onUp);
-                handleEl.style.cursor = 'nwse-resize';
-                e.preventDefault();
-            });
-
-            // keep max values responsive if the window resizes
-            window.addEventListener('resize', () => {
-                const r = elPanel.getBoundingClientRect();
-                const maxW2 = window.innerWidth - 20, maxH2 = window.innerHeight - 20;
-                if (r.width > maxW2) elPanel.style.width = Math.max(minW, maxW2) + 'px';
-                if (r.height > maxH2) elPanel.style.height = Math.max(minH, maxH2) + 'px';
-            });
-        })(panel, resizer);
-        // --- end resizer logic ---
 
         closeBtn.onclick = () => {
             try {
