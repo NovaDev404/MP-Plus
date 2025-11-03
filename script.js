@@ -45,7 +45,6 @@
 
         const c1 = column();
         const c2 = column();
-        const c3 = column();
 
         const startBtn = btn('Start Speedrunner', '#16a34a', '#fff');
         const stopBtn  = btn('Stop Speedrunner',  '#ef4444', '#fff');
@@ -54,15 +53,14 @@
 
         const enableBtn = btn('Enable Right Click', '#16a34a', '#fff');
         const disableBtn = btn('Disable Right Click', '#ef4444', '#fff');
-        c3.appendChild(enableBtn);
-        c3.appendChild(disableBtn);
+        c2.appendChild(enableBtn);
+        c2.appendChild(disableBtn);
 
         const calcBtn = btn('Open Calculator', '#0ea5a4', '#fff');
         c1.appendChild(calcBtn);
 
         cols.appendChild(c1);
         cols.appendChild(c2);
-        cols.appendChild(c3);
         p.appendChild(cols);
 
         document.body.appendChild(p);
