@@ -50,7 +50,6 @@
         c2.appendChild(disableBtn);
         const calcBtn = btn('Open Calculator', '#0ea5a4', '#fff');
         c1.appendChild(calcBtn);
-        // NEW: Open AI button (same color/style as calculator)
         const openAiBtn = btn('Open AI', '#0ea5a4', '#fff');
         c1.appendChild(openAiBtn);
         cols.appendChild(c1);
@@ -289,27 +288,60 @@
     }
     // NEW: Open AI panel that embeds the given URL in an iframe, same header & size as calculator
     function openOpenAI() {
-        const existingPanel = document.getElementById('mp-openai-panel');
+        const content = `
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111}
+          .hero{padding:18px;text-align:center}
+          .btn{display:inline-block;padding:8px 12px;border-radius:6px;border:1px solid #ccc;background:#f3f4f6;cursor:pointer}
+        </style>
+      </head>
+      <body>
+        <div class="hero">
+          <h1>Hello from inside the popup 🎉</h1>
+          <p>Replace this whole block with your markup.</p>
+          <button class="btn" onclick="alert('Button inside popup clicked!')">Click me</button>
+        </div>
+        <script>
+          // inline script WILL run thanks to the host code that re-injects scripts
+          console.log('inline script executed from popup content');
+        </script>
+      </body>
+    </html>
+    `;
+
+        const title = 'Custom Popup';
+
+        const existingPanel = document.getElementById('mp-desmos-panel');
         if (existingPanel) {
             existingPanel.style.display = existingPanel.style.display === 'none' ? '' : existingPanel.style.display;
             existingPanel.style.zIndex = 2147483648;
+            const container = existingPanel.querySelector('#mp-popup-container');
+            const headerTitle = existingPanel.querySelector('.mp-header-title');
+            if (container) injectContent(container, content);
+            if (headerTitle) headerTitle.textContent = title;
             return;
         }
+
         const panel = document.createElement('div');
-        panel.id = 'mp-openai-panel';
+        panel.id = 'mp-desmos-panel';
         panel.style.cssText = `
-            position:fixed;left:12px;top:12px;width:420px;height:500px;z-index:2147483648;
+            position:fixed;left:12px;top:12px;width:620px;height:480px;z-index:2147483648;
             background:#fff;color:#111;border-radius:8px;border:1px solid #bbb;
-            box-shadow:0 8px 30px rgba(0,0,0,.4);font-family:Arial,Helvetica,sans-serif;
+            box-shadow:0 8px 30px rgba(0,0,0,.35);font-family:Arial,Helvetica,sans-serif;
             box-sizing:border-box;user-select:none;padding:0;overflow:hidden;
         `;
+
         const header = document.createElement('div');
         header.style.cssText = `
             display:flex;align-items:center;justify-content:space-between;
-            background:#2b2f33;color:#fff;padding:8px 10px;cursor:grab;
+            background:#121416;color:#fff;padding:8px 10px;cursor:grab;
             font-weight:700;font-size:13px;
         `;
-        header.innerHTML = `<span style="pointer-events:none;">Open AI</span>`;
+        header.innerHTML = `<span class="mp-header-title" style="pointer-events:none;">${title}</span>`;
+
         const headerBtns = document.createElement('div');
         headerBtns.style.cssText = 'display:flex;gap:6px;align-items:center;';
         const closeBtn = document.createElement('button');
@@ -322,22 +354,25 @@
         headerBtns.appendChild(closeBtn);
         header.appendChild(headerBtns);
         panel.appendChild(header);
-        const body = document.createElement('div');
-        body.id = 'mp-openai-body';
-        body.style.cssText = `
-            width:100%;height:calc(100% - 42px);padding:0;box-sizing:border-box;
-            background:transparent;display:flex;flex-direction:column;
-        `;
-        const contentContainer = document.createElement('div');
-        contentContainer.style.cssText = 'width:100%;height:100%;overflow:auto;';
 
-        // Base64 encoded HTML
-        const base64HTML = 'e'
-        
-        // Decode and inject
-        const decodedHTML = atob(base64HTML);
-        contentContainer.innerHTML = decodedHTML;
-        document.body.appendChild(contentContainer);
+        const body = document.createElement('div');
+        body.id = 'mp-desmos-body';
+        body.style.cssText = `
+            width:100%;height:calc(100% - 42px);padding:8px;box-sizing:border-box;
+            background:transparent;
+        `;
+
+        const container = document.createElement('div');
+        container.id = 'mp-popup-container';
+        container.style.cssText = 'width:100%;height:100%;border-radius:6px;overflow:auto;background:#fff;';
+        body.appendChild(container);
+        panel.appendChild(body);
+        document.body.appendChild(panel);
+
+        // inject content (no iframe). This also executes scripts inside the HTML.
+        injectContent(container, content);
+
+        // Draggable behaviour (uses external draggable() if available, otherwise simple internal drag)
         if (typeof draggable === 'function') {
             draggable(panel, header);
         } else {
@@ -382,12 +417,48 @@
                 });
             })();
         }
+
         closeBtn.onclick = () => {
-            panel.remove();
+            try { panel.remove(); } catch (err) {}
         };
+
         panel.addEventListener('mousedown', () => {
             panel.style.zIndex = 2147483648;
         });
+
+        // -------------------------
+        // helper: inject HTML and execute scripts inside it
+        // -------------------------
+        function injectContent(targetElement, htmlString) {
+            // put raw HTML into container
+            targetElement.innerHTML = htmlString;
+
+            // find any <script> tags and re-run them properly
+            // (innerHTML doesn't execute inline scripts, so we recreate them)
+            const scripts = Array.from(targetElement.querySelectorAll('script'));
+            for (const oldScript of scripts) {
+                const newScript = document.createElement('script');
+
+                // copy attributes (type, src, async, etc)
+                for (const attr of oldScript.attributes) {
+                    newScript.setAttribute(attr.name, attr.value);
+                }
+
+                if (oldScript.src) {
+                    // external script: set src and append so it loads and executes
+                    newScript.src = oldScript.src;
+                    // preserve async/defer if present
+                    if (oldScript.async) newScript.async = oldScript.async;
+                    if (oldScript.defer) newScript.defer = oldScript.defer;
+                    // append and wait (optional) — we just append
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                } else {
+                    // inline script: copy the text content so it runs
+                    newScript.textContent = oldScript.textContent;
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                }
+            }
+        }
     }
     function draggable(panel, handle) {
         let dragging = false, ox = 0, oy = 0;
