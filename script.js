@@ -51,7 +51,7 @@
         const calcBtn = btn('Open Calculator', '#0ea5a4', '#fff');
         c1.appendChild(calcBtn);
         const openAiBtn = btn('Open AI', '#0ea5a4', '#fff');
-        c1.appendChild(openAiBtn);
+        c2.appendChild(openAiBtn);
         cols.appendChild(c1);
         cols.appendChild(c2);
         p.appendChild(cols);
@@ -286,7 +286,6 @@
             panel.style.zIndex = 2147483648;
         });
     }
-    // NEW: Open AI panel that embeds the given URL in an iframe, same header & size as calculator
     function openOpenAI() {
         const content = `
     <html>
