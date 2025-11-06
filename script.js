@@ -350,7 +350,7 @@
         sendBtn.textContent = 'Send';
         sendBtn.style.cssText = `
             background:#0078ff;color:#fff;border:none;border-radius:8px;
-            padding:10px 14px;cursor:pointer;font-weight:600;font-family:inherit;
+            padding:10px 14px;cursor:pointer;font-weight:600;font-family:inherit;margin-bottom:10px;
         `;
         
         const stopBtn = document.createElement('button');
@@ -358,7 +358,7 @@
         stopBtn.textContent = 'Stop';
         stopBtn.style.cssText = `
             background:#f3f4f6;color:#111;padding:6px 8px;border-radius:6px;
-            border:1px solid #ddd;cursor:pointer;font-size:12px;font-family:inherit;
+            border:1px solid #ddd;cursor:pointer;font-size:12px;font-family:inherit;margin-bottom:10px;
             display:none;
         `;
         
