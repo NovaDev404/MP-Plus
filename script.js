@@ -290,100 +290,102 @@
     function openOpenAI() {
         const content = `
 <style>
-  body {
-    margin: 0;
-    font-family: "Inter", Arial, sans-serif;
-    background: #f2f3f5;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  .chat-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 12px;
-    gap: 8px;
-    overflow-y: auto;
-  }
-  .message {
-    max-width: 74%;
-    padding: 10px 14px;
-    border-radius: 16px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.04);
-    white-space: pre-wrap;
-    font-size: 14px;
-  }
-  .from-user {
-    align-self: flex-end;
-    background: linear-gradient(180deg,#0b84ff,#0066d6);
-    color: #fff;
-    border-bottom-right-radius: 6px;
-  }
-  .from-other {
-    align-self: flex-start;
-    background: #e6e9ee;
-    color: #111;
-    border-bottom-left-radius: 6px;
-  }
-  .chat-input {
-    display: flex;
-    gap: 8px;
-    padding: 10px;
-    border-top: 1px solid #e0e0e0;
-    background: #fff;
-    align-items: flex-end;
-  }
-  .chat-input textarea {
-    flex: 1;
-    min-height: 44px;
-    max-height: 160px;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    resize: none;
-    font-size: 14px;
-    outline: none;
-    line-height: 1.3;
-  }
-  .controls {
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    align-items:flex-end;
-    justify-content:space-between;
-  }
-  .chat-input button {
-    background: #0078ff;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 14px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .chat-input button:active { transform: translateY(1px); }
-  .small-btn {
-    background: #f3f4f6;
-    color: #111;
-    padding: 6px 8px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    cursor: pointer;
-    font-size: 12px;
-  }
+.mp-ai-chat {
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  background: #f2f3f5;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.mp-ai-chat .chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 8px;
+  overflow-y: auto;
+}
+.mp-ai-chat .message {
+  max-width: 74%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  white-space: pre-wrap;
+  font-size: 14px;
+}
+.mp-ai-chat .from-user {
+  align-self: flex-end;
+  background: linear-gradient(180deg,#0b84ff,#0066d6);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+.mp-ai-chat .from-other {
+  align-self: flex-start;
+  background: #e6e9ee;
+  color: #111;
+  border-bottom-left-radius: 6px;
+}
+.mp-ai-chat .chat-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid #e0e0e0;
+  background: #fff;
+  align-items: flex-end;
+}
+.mp-ai-chat .chat-input textarea {
+  flex: 1;
+  min-height: 44px;
+  max-height: 160px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: none;
+  font-size: 14px;
+  outline: none;
+  line-height: 1.3;
+}
+.mp-ai-chat .controls {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:flex-end;
+  justify-content:space-between;
+}
+.mp-ai-chat .chat-input button {
+  background: #0078ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.mp-ai-chat .chat-input button:active { transform: translateY(1px); }
+.mp-ai-chat .small-btn {
+  background: #f3f4f6;
+  color: #111;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 12px;
+}
 </style>
-<div class="chat-container" id="chat">
-  <!-- intentionally empty at start -->
-</div>
-<div class="chat-input">
-  <textarea id="msgInput" placeholder="Type a message"></textarea>
-  <div class="controls">
-    <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-      <button id="sendBtn">Send</button>
-      <button id="stopBtn" class="small-btn" style="display:none">Stop</button>
+<div class="mp-ai-chat">
+  <div class="chat-container" id="chat">
+    <!-- intentionally empty at start -->
+  </div>
+  <div class="chat-input">
+    <textarea id="msgInput" placeholder="Type a message"></textarea>
+    <div class="controls">
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <button id="sendBtn">Send</button>
+        <button id="stopBtn" class="small-btn" style="display:none">Stop</button>
+      </div>
     </div>
   </div>
 </div>
@@ -424,7 +426,7 @@
   }
   // Send user message & stream AI response
   async function sendMessage() {
-    const raw = input.value.replace(/\\u00A0/g, ' ');
+    const raw = input.value.replace(/\u00a0/g, ' ');
     const text = raw.trim();
     if (!text) return;
     // append user message
@@ -515,7 +517,7 @@
         console.log('Received chunk:', chunk);
         buffer += chunk;
         // split into lines (handles both SSE "data: ..." and JSON-lines)
-        const lines = buffer.split(/\r?\n/);
+        const lines = buffer.split(new RegExp('\\r?\\n'));
         // keep last partial
         buffer = lines.pop() || '';
         for (let rawLine of lines) {
