@@ -776,34 +776,68 @@
         // helper: inject HTML and execute scripts inside it
         // -------------------------
         function injectContent(targetElement, htmlString) {
-          targetElement.innerHTML = htmlString;
-          const scripts = Array.from(targetElement.querySelectorAll('script'));
-          for (const oldScript of scripts) {
-            try {
-              const newScript = document.createElement('script');
-              for (let i = 0; i < oldScript.attributes.length; i++) {
-                const attr = oldScript.attributes[i];
-                newScript.setAttribute(attr.name, attr.value);
-              }
-              newScript.async = !!oldScript.async;
-              newScript.defer = !!oldScript.defer;
-              if (oldScript.type) newScript.type = oldScript.type;
-              if (oldScript.src) {
-                oldScript.parentNode.insertBefore(newScript, oldScript);
-                newScript.src = oldScript.src;
-                oldScript.parentNode.removeChild(oldScript);
+          try {
+            // parse into a fresh DOM (avoids relying on innerHTML execution quirks)
+            const parsed = new DOMParser().parseFromString(htmlString, 'text/html');
+            // clear target
+            while (targetElement.firstChild) targetElement.removeChild(targetElement.firstChild);
+
+            // collect children and scripts separately (snapshot)
+            const nodes = Array.from(parsed.body.childNodes);
+            const scriptNodes = [];
+
+            for (const n of nodes) {
+              if (n.nodeName === 'SCRIPT') {
+                scriptNodes.push(n);
               } else {
-                newScript.text = oldScript.textContent || oldScript.innerHTML || '';
-                oldScript.parentNode.insertBefore(newScript, oldScript);
-                oldScript.parentNode.removeChild(oldScript);
+                // import into current document (keeps event listeners / refs safe)
+                targetElement.appendChild(document.importNode(n, true));
               }
-            } catch (err) {
-              try { oldScript.parentNode.removeChild(oldScript); } catch (_) {}
-              console.error('injectContent: failed to re-run script', err);
             }
+
+            // run scripts serially to preserve order (handles external and inline)
+            (async function runScriptsSerially() {
+              for (const oldScript of scriptNodes) {
+                try {
+                  const newScript = document.createElement('script');
+                  // copy attributes safely
+                  for (let i = 0; i < oldScript.attributes.length; i++) {
+                    const attr = oldScript.attributes[i];
+                    newScript.setAttribute(attr.name, attr.value);
+                  }
+                  // preserve known boolean flags explicitly
+                  if (oldScript.type) newScript.type = oldScript.type;
+                  if (oldScript.async) newScript.async = true;
+                  if (oldScript.defer) newScript.defer = true;
+
+                  if (oldScript.src) {
+                    // append then set src to start load — await load to preserve serial order
+                    await new Promise((resolve) => {
+                      newScript.onload = () => resolve();
+                      newScript.onerror = () => {
+                        console.warn('injectContent: failed to load', oldScript.src);
+                        resolve(); // don't block on errors
+                      };
+                      targetElement.appendChild(newScript);
+                      // setting src after append to avoid race in some engines
+                      newScript.src = oldScript.getAttribute('src');
+                    });
+                  } else {
+                    // inline script: set text and append (executes immediately)
+                    newScript.text = oldScript.textContent || oldScript.innerHTML || '';
+                    targetElement.appendChild(newScript);
+                  }
+                } catch (err) {
+                  console.error('injectContent: script exec failed', err);
+                }
+              }
+            })();
+          } catch (err) {
+            console.error('injectContent: fatal error', err);
+            // fallback: brute force put html (scripts won't auto-run)
+            try { targetElement.innerHTML = htmlString; } catch (_) {}
           }
         }
-    }
     function draggable(panel, handle) {
         let dragging = false, ox = 0, oy = 0;
         const move = e => {
