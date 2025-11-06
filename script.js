@@ -803,6 +803,7 @@
             }
           }
         }
+    }
     function draggable(panel, handle) {
         let dragging = false, ox = 0, oy = 0;
         const move = e => {
