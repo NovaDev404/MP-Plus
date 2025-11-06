@@ -183,7 +183,7 @@
         const header = document.createElement('div');
         header.style.cssText = `
             display:flex;align-items:center;justify-content:space-between;
-            background:#2b2f33;color:#fff;padding: 8px 10px 20px; cursor:grab;
+            background:#2b2f33;color:#fff;padding: 8px 10px; cursor:grab;
             font-weight:700;font-size:13px;
         `;
         header.innerHTML = `<span style="pointer-events:none;">Calculator</span>`;
@@ -204,7 +204,7 @@
         const body = document.createElement('div');
         body.id = 'mp-desmos-body';
         body.style.cssText = `
-            width:100%;height:calc(100% - 42px);padding:8px;box-sizing:border-box;
+            width:100%;height:calc(100% - 42px);padding:8px; padding-bottom: 20px; box-sizing:border-box;
             background:transparent;margin-bottom:10px;
         `;
         
