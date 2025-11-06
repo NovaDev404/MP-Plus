@@ -1,4 +1,3 @@
-### MP_Tools.js
 (function () {
     window.MP_Tools = function () {
         if (document.getElementById('mp-tools-panel')) {
