@@ -312,9 +312,9 @@
     </html>
     `;
 
-        const title = 'Custom Popup';
+        const title = 'AI Chat';
 
-        const existingPanel = document.getElementById('mp-desmos-panel');
+        const existingPanel = document.getElementById('mp-aichat-panel');
         if (existingPanel) {
             existingPanel.style.display = existingPanel.style.display === 'none' ? '' : existingPanel.style.display;
             existingPanel.style.zIndex = 2147483648;
@@ -326,7 +326,7 @@
         }
 
         const panel = document.createElement('div');
-        panel.id = 'mp-desmos-panel';
+        panel.id = 'mp-aichat-panel';
         panel.style.cssText = `
             position:fixed;left:12px;top:12px;width:620px;height:480px;z-index:2147483648;
             background:#fff;color:#111;border-radius:8px;border:1px solid #bbb;
@@ -356,7 +356,7 @@
         panel.appendChild(header);
 
         const body = document.createElement('div');
-        body.id = 'mp-desmos-body';
+        body.id = 'mp-aichat-body';
         body.style.cssText = `
             width:100%;height:calc(100% - 42px);padding:8px;box-sizing:border-box;
             background:transparent;
