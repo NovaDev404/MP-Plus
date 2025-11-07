@@ -58,6 +58,10 @@
         // Anti-Anti-Cheat toggle (combines Anti-Blur + Anti-lockout + red-stuff handling)
         const antiAntiToggle = createToggle('Anti-Anti-Cheat', 'antianti-toggle');
         c2.appendChild(antiAntiToggle);
+
+        // 🆕 Question Lock toggle
+        const lockQuestionToggle = createToggle('Question Lock', 'lockquestion-toggle');
+        c2.appendChild(lockQuestionToggle);
         
         const calcBtn = btn('Calculator', '#0ea5a4', '#fff');
         c1.appendChild(calcBtn);
@@ -74,39 +78,90 @@
         setupSpeedrunnerToggle(speedrunnerToggle);
         setupAntiAntiToggle(antiAntiToggle);
         setupRightClickToggle(rightClickToggle);
+        setupLockQuestionToggle(lockQuestionToggle);
         draggable(p, h);
         calcBtn.onclick = () => openCalculator();
         openAiBtn.onclick = () => openOpenAI();
     }
     
+    // ---------------- QUESTION LOCK ----------------
+    function setupLockQuestionToggle(toggleContainer) {
+        const checkbox = toggleContainer.querySelector('input');
+        checkbox.addEventListener('change', function() {
+            if (this.checked) enableQuestionLock();
+            else disableQuestionLock();
+        });
+    }
+
+    function enableQuestionLock() {
+        if (window.__questionLockEnabled) return console.log('Question Lock already active');
+        window.__questionLockEnabled = true;
+
+        const questionEl = document.querySelector('.question-text, .question, .task-text');
+        if (!questionEl) return console.warn('⚠️ No question element found for locking');
+
+        const originalText = questionEl.textContent.trim();
+
+        const observer = new MutationObserver(mutations => {
+            for (const m of mutations) {
+                if (m.type === 'characterData' || m.type === 'childList' || m.type === 'attributes') {
+                    if (questionEl.textContent.trim() !== originalText) {
+                        console.log('🔒 Question text changed — restoring');
+                        questionEl.textContent = originalText;
+                    }
+                }
+            }
+        });
+
+        observer.observe(questionEl, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+            attributes: true,
+            attributeFilter: ['class', 'style', 'text']
+        });
+
+        window.__questionLockObserver = observer;
+        window.__questionOriginalText = originalText;
+        console.log('🔒 Question Lock ON');
+    }
+
+    function disableQuestionLock() {
+        if (!window.__questionLockEnabled) return console.log('Question Lock already disabled');
+        window.__questionLockEnabled = false;
+
+        try {
+            if (window.__questionLockObserver) window.__questionLockObserver.disconnect();
+        } catch(_) {}
+        window.__questionLockObserver = null;
+        window.__questionOriginalText = null;
+        console.log('🔓 Question Lock OFF');
+    }
+    // ------------------------------------------------
+
+    // utility functions reused below
     function createToggle(label, id) {
         const container = document.createElement('div');
         container.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;';
-        
         const labelEl = document.createElement('span');
         labelEl.textContent = label;
         labelEl.style.cssText = 'font-weight:600;font-size:12px;';
-        
         const toggleContainer = document.createElement('label');
         toggleContainer.style.cssText = 'position:relative;display:inline-block;width:44px;height:24px;';
-        
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.id = id;
         checkbox.style.cssText = 'opacity:0;width:0;height:0;position:absolute;';
-        
         const slider = document.createElement('span');
         slider.style.cssText = `
             position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
             background-color:#374151;transition:.3s;border-radius:24px;
         `;
-        
         const knob = document.createElement('span');
         knob.style.cssText = `
             position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;
             background-color:#e6eef8;transition:.3s;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.3);
         `;
-        
         checkbox.addEventListener('change', function() {
             if (this.checked) {
                 slider.style.backgroundColor = '#16a34a';
@@ -116,147 +171,65 @@
                 knob.style.transform = 'translateX(0)';
             }
         });
-        
         slider.appendChild(knob);
         toggleContainer.appendChild(checkbox);
         toggleContainer.appendChild(slider);
-        
         container.appendChild(labelEl);
         container.appendChild(toggleContainer);
-        
         return container;
     }
-    
-    function setupSpeedrunnerToggle(toggleContainer) {
-        const checkbox = toggleContainer.querySelector('input');
-        
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                startSpeedrunner();
-            } else {
-                stopSpeedrunner();
-            }
-        });
-    }
-    
-    function setupRightClickToggle(toggleContainer) {
-        const checkbox = toggleContainer.querySelector('input');
-        
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                enableRightClick();
-            } else {
-                disableRightClick();
-            }
-        });
-    }
-    
-    // Combined Anti-Anti-Cheat functionality
-    function setupAntiAntiToggle(toggleContainer) {
-        const checkbox = toggleContainer.querySelector('input');
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                enableAntiAntiCheat();
-            } else {
-                disableAntiAntiCheat();
-            }
-        });
-    }
-    
+
+    function setupSpeedrunnerToggle(t){const c=t.querySelector('input');c.addEventListener('change',function(){this.checked?startSpeedrunner():stopSpeedrunner();});}
+    function setupRightClickToggle(t){const c=t.querySelector('input');c.addEventListener('change',function(){this.checked?enableRightClick():disableRightClick();});}
+    function setupAntiAntiToggle(t){const c=t.querySelector('input');c.addEventListener('change',function(){this.checked?enableAntiAntiCheat():disableAntiAntiCheat();});}
+
+    // ---------- Anti-Anti-Cheat ----------
     function enableAntiAntiCheat() {
         if (window.__antiAntiEnabled) return console.log('Anti-Anti-Cheat already enabled');
         window.__antiAntiEnabled = true;
-        
-        // Initial sweep
-        try {
-            document.querySelectorAll('.question-blur').forEach(el => el.classList.remove('question-blur'));
-        } catch (e) {}
-        try {
-            document.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove());
-        } catch (e) {}
-        try {
-            document.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff'));
-        } catch (e) {}
-        
-        const observer = new MutationObserver(mutations => {
-            for (const m of mutations) {
-                // attribute changes: strip classes immediately
-                if (m.type === 'attributes' && m.attributeName === 'class') {
-                    try {
-                        const t = m.target;
-                        if (t && t.classList) {
-                            if (t.classList.contains('question-blur')) t.classList.remove('question-blur');
-                            if (t.tagName === 'DIV' && t.classList.contains('red-stuff')) t.classList.remove('red-stuff');
-                        }
-                    } catch (_) {}
+        try { document.querySelectorAll('.question-blur').forEach(el=>el.classList.remove('question-blur')); } catch(e){}
+        try { document.querySelectorAll('.cdk-overlay-container').forEach(el=>el.remove()); } catch(e){}
+        try { document.querySelectorAll('div.red-stuff').forEach(el=>el.classList.remove('red-stuff')); } catch(e){}
+
+        const observer = new MutationObserver(mutations=>{
+            for(const m of mutations){
+                if(m.type==='attributes'&&m.attributeName==='class'){
+                    const t=m.target;
+                    if(t&&t.classList){
+                        if(t.classList.contains('question-blur'))t.classList.remove('question-blur');
+                        if(t.tagName==='DIV'&&t.classList.contains('red-stuff'))t.classList.remove('red-stuff');
+                    }
                 }
-                
-                // childList: handle added nodes
-                if (m.type === 'childList') {
-                    m.addedNodes.forEach(node => {
-                        if (!node || node.nodeType !== 1) return;
-                        try {
-                            // if a new overlay container appears, remove it
-                            if (node.matches && node.matches('.cdk-overlay-container')) {
-                                node.remove();
-                                return;
-                            }
-                        } catch (_) {}
-                        try {
-                            // remove question-blur from node and descendants
-                            if (node.classList && node.classList.contains('question-blur')) node.classList.remove('question-blur');
-                            node.querySelectorAll && node.querySelectorAll('.question-blur').forEach(el => el.classList.remove('question-blur'));
-                        } catch (_) {}
-                        try {
-                            // remove red-stuff class from divs (not deleting elements)
-                            if (node.tagName === 'DIV' && node.classList && node.classList.contains('red-stuff')) node.classList.remove('red-stuff');
-                            node.querySelectorAll && node.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff'));
-                        } catch (_) {}
-                        try {
-                            // remove any overlay containers nested/added
-                            node.querySelectorAll && node.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove());
-                        } catch (_) {}
+                if(m.type==='childList'){
+                    m.addedNodes.forEach(node=>{
+                        if(!node||node.nodeType!==1)return;
+                        if(node.matches&&node.matches('.cdk-overlay-container')){node.remove();return;}
+                        node.querySelectorAll&&node.querySelectorAll('.question-blur').forEach(e=>e.classList.remove('question-blur'));
+                        node.querySelectorAll&&node.querySelectorAll('div.red-stuff').forEach(e=>e.classList.remove('red-stuff'));
+                        node.querySelectorAll&&node.querySelectorAll('.cdk-overlay-container').forEach(e=>e.remove());
                     });
                 }
             }
         });
-        
-        try {
-            observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
-            window.__antiAntiObserver = observer;
-        } catch (e) {
-            console.error('Anti-Anti-Cheat observer failed to start', e);
-            window.__antiAntiObserver = null;
-        }
-        
-        // Backup interval in case something bypasses the observer
-        window.__antiAntiInterval = setInterval(() => {
-            try { document.querySelectorAll('.question-blur').forEach(el => el.classList.remove('question-blur')); } catch(_) {}
-            try { document.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove()); } catch(_) {}
-            try { document.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff')); } catch(_) {}
-        }, 300);
-        
-        console.log('Anti-Anti-Cheat ON — stripping question-blur, removing overlays, and removing red-stuff class from divs');
+        observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+        window.__antiAntiObserver=observer;
+        window.__antiAntiInterval=setInterval(()=>{
+            try{document.querySelectorAll('.question-blur').forEach(e=>e.classList.remove('question-blur'));}catch(_){}
+            try{document.querySelectorAll('.cdk-overlay-container').forEach(e=>e.remove());}catch(_){}
+            try{document.querySelectorAll('div.red-stuff').forEach(e=>e.classList.remove('red-stuff'));}catch(_){}
+        },300);
+        console.log('Anti-Anti-Cheat ON');
     }
-    
-    function disableAntiAntiCheat() {
-        if (!window.__antiAntiEnabled) return console.log('Anti-Anti-Cheat already disabled');
-        window.__antiAntiEnabled = false;
-        try {
-            if (window.__antiAntiObserver) {
-                window.__antiAntiObserver.disconnect();
-                window.__antiAntiObserver = null;
-            }
-        } catch (_) {}
-        try {
-            if (window.__antiAntiInterval) {
-                clearInterval(window.__antiAntiInterval);
-                window.__antiAntiInterval = null;
-            }
-        } catch (_) {}
+
+    function disableAntiAntiCheat(){
+        if(!window.__antiAntiEnabled)return console.log('Anti-Anti-Cheat already disabled');
+        window.__antiAntiEnabled=false;
+        try{if(window.__antiAntiObserver)window.__antiAntiObserver.disconnect();}catch(_){}
+        try{if(window.__antiAntiInterval)clearInterval(window.__antiAntiInterval);}catch(_){}
         console.log('Anti-Anti-Cheat OFF');
     }
-    
+    // ------------------------------------
+
     function startSpeedrunner() {
         if (window.__autoClickerRunning) return console.log('Speedrunner already running');
         window.__autoClickerStopRequested = false;
