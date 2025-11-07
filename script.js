@@ -8,7 +8,7 @@
     };
     
     function createPanel() {
-        const p = document.createElement('div');F
+        const p = document.createElement('div');
         p.id = 'mp-tools-panel';
         p.style.cssText = `
             position:fixed;right:12px;top:12px;width:420px;z-index:2147483647;
