@@ -49,7 +49,7 @@
         // Speedrunner toggle
         const speedrunnerToggle = createToggle('Speedrunner', 'speedrunner-toggle');
         c1.appendChild(speedrunnerToggle);
-        speedrunnerToggle.style.marginBottom = "40px";
+        speedrunnerToggle.style.marginBottom = "50px";
         
         // Right click toggle
         const rightClickToggle = createToggle('Right Click', 'rightclick-toggle');
