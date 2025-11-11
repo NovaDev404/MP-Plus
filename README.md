@@ -11,3 +11,4 @@ javascript:(function(){fetch('https://api.github.com/repos/SuperGamer474/MP-Tool
    - `2` to toggle the 'remove annoying' feature
    - `3` to toggle the 'right click' feature, which re-enables the blocked right clicking, and enables selecting more text.
    - `4` to toggle the calculator.
+   - `5` to toggle the AI chat.
