@@ -461,6 +461,7 @@
     /* -------------------------
        AI Chat (added) — toggle via Alt+5
        - openOpenAI(), setupChat(), destroyChatPanel(), toggleOpenAI()
+       - NO close button in header; toggled only via Alt+5
        ------------------------- */
 
     function openOpenAI() {
@@ -486,19 +487,8 @@
             background:#2b2f33;color:#fff;padding:8px 10px;cursor:grab;
             font-weight:700;font-size:13px;
         `;
+        // NO close button here (per request)
         header.innerHTML = `<span style="pointer-events:none;">AI Chat</span>`;
-
-        const headerBtns = document.createElement('div');
-        headerBtns.style.cssText = 'display:flex;gap:6px;align-items:center;';
-        const closeBtn = document.createElement('button');
-        closeBtn.title = 'Close';
-        closeBtn.textContent = '✕';
-        closeBtn.style.cssText = `
-            background:transparent;border:0;color:inherit;cursor:pointer;padding:2px 6px;
-            font-size:14px;
-        `;
-        headerBtns.appendChild(closeBtn);
-        header.appendChild(headerBtns);
         panel.appendChild(header);
 
         const chatContainer = document.createElement('div');
@@ -552,7 +542,7 @@
 
         draggable(panel, header);
 
-        closeBtn.onclick = () => destroyChatPanel();
+        // No close button: panel is closed only via toggleOpenAI()
 
         panel.addEventListener('mousedown', () => { panel.style.zIndex = 2147483648; });
 
