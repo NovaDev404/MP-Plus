@@ -43,6 +43,7 @@
     const THEMES = {
         default:      { gradient: 'linear-gradient(rgb(104, 210, 255), rgb(63, 145, 225))', text: null },
         brimblecombe:{ gradient: 'linear-gradient(red, black)',               text: 'BRIMBLECOMBE' },
+        brimblecombe2:{ gradient: 'linear-gradient(red, maroon)',               text: 'BRIMBLECOMBE' },
         baldock:     { gradient: 'linear-gradient(limegreen, green)',         text: 'BALDOCK' },
         warren:      { gradient: 'linear-gradient(skyblue, blue)',            text: 'WARREN' },
         white:       { gradient: 'linear-gradient(yellow, orange)',           text: 'WHITE' }
