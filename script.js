@@ -71,7 +71,7 @@
     }
 
     function cycleProgressTheme() {
-        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white'];
+        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white', 'halloween', 'easter', 'christmas'];
         const currentIdx = order.indexOf(window.__mpToolsState.progressTheme);
         const nextIdx = (currentIdx + 1) % order.length;
         window.__mpToolsState.progressTheme = order[nextIdx];
