@@ -11,32 +11,173 @@
        ------------------------- */
     function loadState() {
         try {
-            const raw = localStorage.getItem('__mpToolsState_v1');
+            const raw = localStorage.getItem('__mpToolsState_v2');
             if (raw) {
                 window.__mpToolsState = JSON.parse(raw);
             } else {
                 window.__mpToolsState = {
                     speedrunner: false,
                     rightClick: false,
-                    removeAnnoying: false
+                    removeAnnoying: false,
+                    progressTheme: 'default' // default | brimblecombe | baldock | warren | white
                 };
             }
         } catch (e) {
             window.__mpToolsState = {
                 speedrunner: false,
                 rightClick: false,
-                removeAnnoying: false
+                removeAnnoying: false,
+                progressTheme: 'default'
             };
         }
     }
     function saveState() {
         try {
-            localStorage.setItem('__mpToolsState_v1', JSON.stringify(window.__mpToolsState || {}));
+            localStorage.setItem('__mpToolsState_v2', JSON.stringify(window.__mpToolsState || {}));
         } catch (e) { /* ignore */ }
     }
 
     // init global state
     if (!window.__mpToolsState) loadState();
+
+    const THEMES = {
+        default:      { gradient: 'linear-gradient(rgb(104, 210, 255), rgb(63, 145, 225))', text: null },
+        brimblecombe:{ gradient: 'linear-gradient(red, black)',               text: 'BRIMBLECOMBE' },
+        baldock:     { gradient: 'linear-gradient(limegreen, green)',         text: 'BALDOCK' },
+        warren:      { gradient: 'linear-gradient(skyblue, blue)',            text: 'WARREN' },
+        white:       { gradient: 'linear-gradient(yellow, orange)',           text: 'WHITE' }
+    };
+
+    let progressObserver = null;
+
+    function applyProgressTheme() {
+        if (progressObserver) progressObserver.disconnect();
+
+        const theme = THEMES[window.__mpToolsState.progressTheme];
+
+        progressObserver = new MutationObserver(() => {
+            document.querySelectorAll('div.progress-inner').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.cssText = `
+                    width: ${width};
+                    padding-top: ${theme.text ? '5px' : '0'};
+                    background: ${theme.gradient};
+                    text-align: center;
+                    font-weight: bold;
+                    color: white;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                `;
+                bar.innerHTML = theme.text ? `<b>${theme.text}</b>` : '';
+            });
+        });
+
+        // Initial apply
+        document.querySelectorAll('div.progress-inner').forEach(bar => {
+            const width = bar.style.width || '0%';
+            bar.style.cssText = `
+                width: ${width};
+                padding-top: ${theme.text ? '5px' : '0'};
+                background: ${theme.gradient};
+                text-align: center;
+                font-weight: bold;
+                color: white;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            `;
+            bar.innerHTML = theme.text ? `<b>${theme.text}</b>` : '';
+        });
+
+        progressObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+    }
+
+    function cycleProgressTheme() {
+        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white'];
+        const currentIdx = order.indexOf(window.__mpToolsState.progressTheme);
+        const nextIdx = (currentIdx + 1) % order.length;
+        window.__mpToolsState.progressTheme = order[nextIdx];
+        saveState();
+        applyProgressTheme();
+
+        const name = window.__mpToolsState.progressTheme === 'default' ? 'Default' : window.__mpToolsState.progressTheme.toUpperCase();
+        showStatus(`Progress theme: ${name}`, '#ffd700');
+    }
+
+    // Double-press detection for Alt+6 menu
+    let alt6Presses = 0;
+    let alt6Timer = null;
+
+    function handleAlt6() {
+        alt6Presses++;
+        if (alt6Presses === 1) {
+            // single press → toggle on/off (cycle to next)
+            cycleProgressTheme();
+        } else if (alt6Presses === 2) {
+            // double press → show selection menu
+            showProgressThemeMenu();
+        }
+
+        clearTimeout(alt6Timer);
+        alt6Timer = setTimeout(() => {
+            alt6Presses = 0;
+        }, 400);
+    }
+
+    function showProgressThemeMenu() {
+        // Remove any existing menu
+        const old = document.getElementById('mp-progress-theme-menu');
+        if (old) old.remove();
+
+        const menu = document.createElement('div');
+        menu.id = 'mp-progress-theme-menu';
+        menu.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            z-index: 2147483647;
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        `;
+
+        menu.innerHTML = `<div style="font-size:18px;font-weight:bold;margin-bottom:15px;">Choose Progress Bar Theme</div>`;
+
+        Object.keys(THEMES).forEach(key => {
+            const btn = document.createElement('div');
+            btn.textContent = key === 'default' ? 'Default (Blue)' : key.toUpperCase();
+            btn.style.cssText = `
+                display: block;
+                width: 100%;
+                padding: 12px;
+                margin: 8px 0;
+                background: ${THEMES[key].gradient};
+                color: white;
+                font-weight: bold;
+                border-radius: 8px;
+                cursor: pointer;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            `;
+            btn.onclick = () => {
+                window.__mpToolsState.progressTheme = key;
+                saveState();
+                applyProgressTheme();
+                showStatus(`Progress theme: ${key === 'default' ? 'Default' : key.toUpperCase()}`, '#ffd700');
+                menu.remove();
+            };
+            menu.appendChild(btn);
+        });
+
+        const closeBtn = document.createElement('div');
+        closeBtn.textContent = 'Close';
+        closeBtn.style.cssText = 'margin-top:15px;color:#aaa;cursor:pointer;';
+        closeBtn.onclick = () => menu.remove();
+        menu.appendChild(closeBtn);
+
+        document.body.appendChild(menu);
+    }
 
     /* -------------------------
        Status Display Functions
@@ -788,8 +929,14 @@
             const isDigit3 = e.code === 'Digit3' || e.key === '3';
             const isDigit4 = e.code === 'Digit4' || e.key === '4';
             const isDigit5 = e.code === 'Digit5' || e.key === '5';
+            const isDigit6 = e.code === 'Digit6' || e.key === '6';
 
-            if (e.altKey && isDigit1) {
+            if (e.altKey && isDigit6) {
+                e.preventDefault();
+                window.__mpToolsLastKeyAt = now;
+                console.log('Alt+6 pressed => handling progress theme');
+                handleAlt6();
+            } else if (e.altKey && isDigit1) {
                 e.preventDefault();
                 window.__mpToolsLastKeyAt = now;
                 console.log('Alt+1 pressed => toggling speedrunner');
@@ -824,10 +971,11 @@
     function initialize() {
         showActivated();
         setupKeyboardShortcuts();
+        applyProgressTheme();
         if (window.__mpToolsState.speedrunner) startSpeedrunner();
         if (window.__mpToolsState.rightClick) enableRightClickAndSelect();
         if (window.__mpToolsState.removeAnnoying) enableremoveAnnoying();
-        console.log('MP-Tools activated - Use Alt+1, Alt+2, Alt+3 to toggle features; Alt+4 toggles Calculator; Alt+5 toggles AI Chat');
+        console.log('MP-Tools activated - Use Alt+1, Alt+2, Alt+3 to toggle features; Alt+4 toggles Calculator; Alt+5 toggles AI Chat; Alt+6 for progress theme (single press cycles, double press opens menu)');
     }
 
     // Run initialization
@@ -877,4 +1025,4 @@
         });
     }
 
-})();
+})(); 
