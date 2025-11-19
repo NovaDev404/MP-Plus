@@ -174,6 +174,8 @@
         menu.id = 'mp-progress-theme-menu';
         menu.style.cssText = `
             position: fixed;
+            max-height: 70dvh;
+            overflow-y: auto;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
