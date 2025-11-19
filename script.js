@@ -18,8 +18,7 @@
                     speedrunner: false,
                     rightClick: false,
                     removeAnnoying: false,
-                    progressTheme: 'default', // default | brimblecombe | baldock | warren | white
-                    animated: true // NEW: controls emoji scrolling
+                    progressTheme: 'default' // default | brimblecombe | baldock | warren | white
                 };
             }
         } catch (e) {
@@ -27,8 +26,7 @@
                 speedrunner: false,
                 rightClick: false,
                 removeAnnoying: false,
-                progressTheme: 'default',
-                animated: true
+                progressTheme: 'default'
             };
         }
     }
@@ -82,33 +80,11 @@
             gradient: 'linear-gradient(#00BCBC, lightblue, lightblue, lightyellow, lightyellow)',
             emojis: ['𓇼','🌊','🐚','🫧','🪼','⛱️','🏝️','🏄','🌴','🍹','🌞', 'OCEAN VIBES']
         },
-        space: {
+         space: {
             gradient: 'linear-gradient(#00BCBC, lightblue, lightblue, lightyellow, lightyellow)',
             emojis: ['˚ . . ✦ ๋⭑🛸๋ ˚ ‎‧₊ . ☆⋆. ˚🛰⭑ . ˚ 🌎 ✦ . . ✦ ˚ ๋⭑🛸๋⭑ ˚ .˚. . ˚ .', 'SPACE']
-        }
+         }
     };
-
-    // ensure keyframes and helper css exist once
-    if (!document.getElementById('mp-tools-progress-scroll-style')) {
-        const style = document.createElement('style');
-        style.id = 'mp-tools-progress-scroll-style';
-        style.textContent = `
-            @keyframes mp-tools-scroll {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-50%); }
-            }
-            .mp-tools-progress-scroll {
-                display: inline-block;
-                white-space: nowrap;
-                will-change: transform;
-            }
-            .mp-tools-progress-scroll.animated {
-                animation: mp-tools-scroll 50s linear infinite;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
     function applyThemeToBar(bar, theme) {
         const width = bar.style.width || '0%';
 
@@ -124,11 +100,7 @@
             display: flex;
             align-items: center;
             padding: 0;
-            box-sizing: border-box;
         `;
-
-        // Clear previous content
-        bar.innerHTML = '';
 
         // Emoji overlay – repeat sequence to fill bar width
         if (theme.emojis && theme.emojis.length > 0) {
@@ -138,38 +110,19 @@
             const allEmojisSingle = Array.from({length: repeatsNeeded}, () => theme.emojis).flat();
             const emojiLine = [...allEmojisSingle, ...allEmojisSingle].join(' ');
 
-            // create wrapper element
-            const wrap = document.createElement('div');
-            wrap.className = 'mp-tools-progress-scroll';
-            wrap.textContent = emojiLine;
-
-            // apply animation only if state.animated === true
-            if (window.__mpToolsState && window.__mpToolsState.animated) {
-                wrap.classList.add('animated');
-            } else {
-                // if not animated, we will allow wrapping (so it fills width) and repeat until wide enough
-                wrap.style.whiteSpace = 'nowrap';
-            }
-
-            bar.appendChild(wrap);
-
-            // If animation disabled, duplicate content until the element is at least as wide as the bar,
-            // then switch to normal wrapping so it fills the bar width visually.
-            if (!window.__mpToolsState || !window.__mpToolsState.animated) {
-                // Run this after next tick so measurements are accurate
-                requestAnimationFrame(() => {
-                    const minWidth = bar.clientWidth || parseInt(getComputedStyle(bar).width, 10) || window.innerWidth;
-                    // safety limit to prevent infinite loops
-                    let safety = 0;
-                    // We want the content to be at least the bar width. Append copies until it is.
-                    while (wrap.scrollWidth < minWidth && safety < 200) {
-                        wrap.appendChild(document.createTextNode(' ' + emojiLine));
-                        safety++;
+            bar.innerHTML = `
+                <div style="
+                    display: inline-block;
+                    white-space: nowrap;
+                    animation: scroll 50s linear infinite;
+                ">${emojiLine}</div>
+                <style>
+                    @keyframes scroll {
+                        0%   { transform: translateX(0); }
+                        100% { transform: translateX(-50%); }
                     }
-                    // allow wrapping so emojis occupy entire bar width (keeps them visible without scroll)
-                    wrap.style.whiteSpace = 'normal';
-                });
-            }
+                </style>
+            `;
         } else {
             bar.innerHTML = ''; // default theme = no emojis
         }
@@ -179,7 +132,7 @@
         document.querySelectorAll('div.progress-inner').forEach(bar => applyThemeToBar(bar, theme));
     }
     function cycleProgressTheme() {
-        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white', 'halloween', 'easter', 'christmas', 'patricks', 'ocean', 'space'];
+        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white', 'halloween', 'easter', 'christmas', 'patricks', 'ocean'];
         const currentIdx = order.indexOf(window.__mpToolsState.progressTheme);
         const nextIdx = (currentIdx + 1) % order.length;
         window.__mpToolsState.progressTheme = order[nextIdx];
@@ -224,37 +177,8 @@
             font-family: Arial, Helvetica, sans-serif;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            min-width: 320px;
         `;
-        menu.innerHTML = `<div style="font-size:18px;font-weight:bold;margin-bottom:12px;">Choose Progress Bar Theme</div>`;
-
-        // Animated toggle (NEW)
-        const animatedToggle = document.createElement('div');
-        animatedToggle.style.cssText = `
-            display:flex;align-items:center;justify-content:space-between;
-            background: rgba(255,255,255,0.06); padding:10px; border-radius:8px; margin-bottom:12px;
-        `;
-        const animatedLabel = document.createElement('div');
-        animatedLabel.textContent = 'Animated (scrolling)';
-        animatedLabel.style.fontWeight = '700';
-        const animatedBtn = document.createElement('button');
-        function updateAnimatedBtn() {
-            animatedBtn.textContent = window.__mpToolsState.animated ? 'ON' : 'OFF';
-            animatedBtn.style.cssText = `
-                padding:6px 10px;border-radius:6px;border:none;cursor:pointer;
-                background: ${window.__mpToolsState.animated ? '#10b981' : '#ef4444'};
-                color:#fff;font-weight:700;
-            `;
-        }
-        animatedBtn.onclick = () => {
-            toggleAnimated();
-            updateAnimatedBtn();
-        };
-        updateAnimatedBtn();
-        animatedToggle.appendChild(animatedLabel);
-        animatedToggle.appendChild(animatedBtn);
-        menu.appendChild(animatedToggle);
-
+        menu.innerHTML = `<div style="font-size:18px;font-weight:bold;margin-bottom:15px;">Choose Progress Bar Theme</div>`;
         Object.keys(THEMES).forEach(key => {
             const btn = document.createElement('div');
             btn.textContent = key === 'default' ? 'Default (Blue)' : key.toUpperCase();
@@ -363,18 +287,6 @@
         } else {
             disableRightClickAndSelect();
             showStatus('Right Click - OFF', '#ef4444');
-        }
-    }
-    // NEW: toggle animated
-    function toggleAnimated() {
-        if (shouldDebounceToggle()) return console.log('toggleAnimated: debounced');
-        window.__mpToolsState.animated = !window.__mpToolsState.animated;
-        saveState();
-        applyProgressTheme();
-        if (window.__mpToolsState.animated) {
-            showStatus('Animated - ON', '#10b981');
-        } else {
-            showStatus('Animated - OFF', '#ef4444');
         }
     }
     /* -------------------------
@@ -953,7 +865,6 @@
             const isDigit4 = e.code === 'Digit4' || e.key === '4';
             const isDigit5 = e.code === 'Digit5' || e.key === '5';
             const isDigit6 = e.code === 'Digit6' || e.key === '6';
-            const isDigit7 = e.code === 'Digit7' || e.key === '7';
             if (e.altKey && isDigit6) {
                 e.preventDefault();
                 window.__mpToolsLastKeyAt = now;
@@ -984,11 +895,6 @@
                 window.__mpToolsLastKeyAt = now;
                 console.log('Alt+5 pressed => toggling AI Chat');
                 toggleOpenAI();
-            } else if (e.altKey && isDigit7) {
-                e.preventDefault();
-                window.__mpToolsLastKeyAt = now;
-                console.log('Alt+7 pressed => toggling animated');
-                toggleAnimated();
             }
         }, true);
     }
@@ -1002,7 +908,7 @@
         if (window.__mpToolsState.speedrunner) startSpeedrunner();
         if (window.__mpToolsState.rightClick) enableRightClickAndSelect();
         if (window.__mpToolsState.removeAnnoying) enableremoveAnnoying();
-        console.log('MP-Tools activated - Use Alt+1, Alt+2, Alt+3 to toggle features; Alt+4 toggles Calculator; Alt+5 toggles AI Chat; Alt+6 for progress theme (single press cycles, double press opens menu); Alt+7 toggles progress bar animated state');
+        console.log('MP-Tools activated - Use Alt+1, Alt+2, Alt+3 to toggle features; Alt+4 toggles Calculator; Alt+5 toggles AI Chat; Alt+6 for progress theme (single press cycles, double press opens menu)');
     }
     // Run initialization
     initialize();
