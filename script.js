@@ -87,6 +87,10 @@
          max: {
             gradient: 'linear-gradient(red, orange, yellow, green, blue, purple, pink)',
             emojis: ['🌈', '🦄', '💗', '🦋', 'MAX']
+        },
+         max: {
+            gradient: 'linear-gradient(green, black, green, darkgreen, black, black, darkgreen, green, black)',
+            emojis: ['📱', '💻', '😎', '☀️', 'JONATHAN']
         }
        };
     function applyThemeToBar(bar, theme) {
