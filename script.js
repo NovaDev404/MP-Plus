@@ -83,6 +83,10 @@
          space: {
             gradient: 'linear-gradient(black, white, black, lightgray, black, black, gray, black, black, white, black, black, gray, black, black)',
             emojis: ['✦', '⭑', '🛸', '˚', '☆', '⋆', '🛰', '⭑', '🌎', '✦', '✦', '⭑', '🛸', '⭑', 'SPACE']
+        },
+        ocean: {
+            background: url("https://www.google.com.au/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dmath%2Bbackground&psig=AOvVaw1J5Aqzf2dml5ptxiYb-qtc&ust=1763679448913000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCKjDl42o_5ADFQAAAAAdAAAAABAE"),
+            emojis: ['𓇼','🌊','🐚','🫧','🪼','⛱️','🏝️','🏄','🌴','🍹','🌞', 'OCEAN VIBES']
          }
     };
     function applyThemeToBar(bar, theme) {
