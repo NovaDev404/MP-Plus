@@ -50,7 +50,7 @@
         halloween:       { gradient: 'linear-gradient(white, orange, black)',           text: 'HALLOWEEN' },
         easter:       { gradient: 'linear-gradient(#FFD1DC, #E3E4FA, #AAF0D1)',           text: 'EASTER' },
         patricks:       { gradient: 'linear-gradient(green, darkgreen, orange)',           text: 'ST PATRICKS DAY' },
-        ocean:       { gradient: 'linear-gradient(blue, lightblue, lightblue, yellow, lightyellow, lightyellow)',           text: 'BLUES PEACE' },
+        ocean:       { gradient: 'linear-gradient(blue, lightblue, lightblue, lightyellow, lightyellow, yellow)',           text: 'BLUES PEACE' },
     };
 
     function applyThemeToBar(bar, theme) {
