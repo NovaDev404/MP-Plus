@@ -62,23 +62,23 @@
         },
         christmas: {
             gradient: 'linear-gradient(white, white, green, red, red)',
-            emojis: ['🎅','🎄','🎁','✨','☃️','❄️','🦌','⛄','🔔']
+            emojis: ['🎅','🎄','🎁','✨','☃️','❄️','🦌','⛄','🔔', 'CHRISTMAS']
         },
         halloween: {
             gradient: 'linear-gradient(white, orange, black)',
-            emojis: ['☠️','🍬','🏚️','👻','🫣','👺','💀','🦇','🎃']
+            emojis: ['☠️','🍬','🏚️','👻','🫣','👺','💀','🦇','🎃', 'HALLOWEEN']
         },
         easter: {
             gradient: 'linear-gradient(#FFD1DC, #E3E4FA, #AAF0D1)',
-            emojis: ['🐤','🐰','🐥','🎁','🌈','🦋','🥚','🌷','🐣']
+            emojis: ['🐤','🐰','🐥','🎁','🌈','🦋','🥚','🌷','🐣', 'EASTER']
         },
         patricks: {
             gradient: 'linear-gradient(green, darkgreen, orange)',
-            emojis: ['🍀','💚','🤞','💰','🌈','☘️','🪙','🍻']
+            emojis: ['🍀','💚','🤞','💰','🌈','☘️','🪙','🍻', 'ST PATRICKS DAY']
         },
         ocean: {
             gradient: 'linear-gradient(#00BCBC, lightblue, lightblue, lightyellow, lightyellow)',
-            emojis: ['𓇼','🌊','🐚','🫧','🪼','⛱️','🏝️','🏄','🌴','🍹','🌞']
+            emojis: ['𓇼','🌊','🐚','🫧','🪼','⛱️','🏝️','🏄','🌴','🍹','🌞', 'OCEAN VIBES']
         },
     };
     function applyThemeToBar(bar, theme) {
