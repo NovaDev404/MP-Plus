@@ -82,7 +82,7 @@
         },
          space: {
             gradient: 'linear-gradient(#00BCBC, lightblue, lightblue, lightyellow, lightyellow)',
-            emojis: ['˚ . . ✦ ๋⭑🛸๋ ˚ ‎‧₊ . ☆⋆. ˚🛰⭑ . ˚ 🌎 ✦ . . ✦ ˚ ๋⭑🛸๋⭑ ˚ .˚. . ˚ .', 'SPACE']
+            emojis = ['✦', '⭑', '🛸', '˚', '☆', '⋆', '🛰', '⭑', '🌎', '✦', '✦', '⭑', '🛸', '⭑', 'SPACE']
          }
     };
     function applyThemeToBar(bar, theme) {
@@ -132,7 +132,7 @@
         document.querySelectorAll('div.progress-inner').forEach(bar => applyThemeToBar(bar, theme));
     }
     function cycleProgressTheme() {
-        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white', 'halloween', 'easter', 'christmas', 'patricks', 'ocean'];
+        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white', 'halloween', 'easter', 'christmas', 'patricks', 'ocean', 'space'];
         const currentIdx = order.indexOf(window.__mpToolsState.progressTheme);
         const nextIdx = (currentIdx + 1) % order.length;
         window.__mpToolsState.progressTheme = order[nextIdx];
