@@ -81,7 +81,7 @@
             emojis: ['𓇼','🌊','🐚','🫧','🪼','⛱️','🏝️','🏄','🌴','🍹','🌞', 'OCEAN VIBES']
         },
          space: {
-            gradient: 'linear-gradient(black, black, white, black, black, white, black, black, white, black, black, white, black, black)',
+            gradient: 'linear-gradient(black, white, black, lightgray, black, black, gray, black, black, white, black, black, gray, black, black)',
             emojis: ['✦', '⭑', '🛸', '˚', '☆', '⋆', '🛰', '⭑', '🌎', '✦', '✦', '⭑', '🛸', '⭑', 'SPACE']
          }
     };
