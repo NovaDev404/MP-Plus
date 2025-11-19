@@ -80,6 +80,9 @@
             gradient: 'linear-gradient(#00BCBC, lightblue, lightblue, lightyellow, lightyellow)',
             emojis: ['𓇼','🌊','🐚','🫧','🪼','⛱️','🏝️','🏄','🌴','🍹','🌞', 'OCEAN VIBES']
         },
+         space: {
+            gradient: 'linear-gradient(#00BCBC, lightblue, lightblue, lightyellow, lightyellow)',
+            emojis: ['˚ . . ✦ ๋⭑🛸๋ ˚ ‎‧₊ . ☆⋆. ˚🛰⭑ . ˚ 🌎 ✦ . . ✦ ˚ ๋⭑🛸๋⭑ ˚ .˚. . ˚ .', 'SPACE']
     };
     function applyThemeToBar(bar, theme) {
         const width = bar.style.width || '0%';
