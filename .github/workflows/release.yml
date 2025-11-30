@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - "App/**"
+      - ".github/**"
 
 permissions:
   contents: write
@@ -57,17 +58,27 @@ jobs:
           
           Write-Output "Original installer: $($installer.Name)"
           Write-Output "Renamed installer: $newName"
-          "INSTALLER_PATH=$newPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          
+          # Use forward slashes for GitHub Actions compatibility
+          $githubPath = "App/dist/$newName" -replace '\\', '/'
+          "INSTALLER_PATH=$githubPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "INSTALLER_NAME=$newName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Verify installer exists
         shell: pwsh
         run: |
-          if (Test-Path "${{ env.INSTALLER_PATH }}") {
-            Write-Output "✅ Installer exists at: ${{ env.INSTALLER_PATH }}"
-            Get-ChildItem "App/dist" | ForEach-Object { Write-Output "Found: $($_.Name)" }
-          } else {
-            Write-Output "❌ Installer not found at: ${{ env.INSTALLER_PATH }}"
+          # Test with both path formats
+          $windowsPath = "App\dist\MP-Plus-Setup-${{ env.VERSION }}.exe"
+          $githubPath = "App/dist/MP-Plus-Setup-${{ env.VERSION }}.exe"
+          
+          if (Test-Path $windowsPath) {
+            Write-Output "✅ Installer exists at Windows path: $windowsPath"
+          }
+          if (Test-Path $githubPath) {
+            Write-Output "✅ Installer exists at GitHub path: $githubPath"
+          }
+          if (-not (Test-Path $windowsPath) -and -not (Test-Path $githubPath)) {
+            Write-Output "❌ Installer not found at either path"
             Get-ChildItem "App/dist" -Recurse | ForEach-Object { Write-Output "Available: $($_.FullName)" }
             exit 1
           }
@@ -79,7 +90,6 @@ jobs:
           name: MP+ v${{ env.VERSION }}
           draft: false
           prerelease: false
-          files: |
-            ${{ env.INSTALLER_PATH }}
+          files: ${{ env.INSTALLER_PATH }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
