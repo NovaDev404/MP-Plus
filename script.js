@@ -398,7 +398,7 @@
     function enableremoveAnnoying() {
         if (window.__removeAnnoyingEnabled) return console.log('Remove Annoying already enabled');
         window.__removeAnnoyingEnabled = true;
-        try { document.querySelectorAll('.cdk-overlay-container').forEach(el => { if (el.textContent.includes('5-second lockout')) el.remove(); }); } catch (e) { }
+        try { document.querySelectorAll('.cdk-overlay-container').forEach(el => { if (el.textContent.includes('5-second lockout') || el.textContent.includes('Frequent tab-switching detected')) el.remove(); }); } catch (e) { }
         try { document.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff')); } catch (e) { }
         const observer = new MutationObserver(mutations => {
             for (const m of mutations) {
