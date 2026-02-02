@@ -37,6 +37,18 @@
     }
     // init global state
     if (!window.__mpToolsState) loadState();
+    // Add global styles for animation
+    if (!document.getElementById('mp-tools-animation-styles')) {
+        const style = document.createElement('style');
+        style.id = 'mp-tools-animation-styles';
+        style.textContent = `
+        @keyframes mp-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    `;
+        document.head.appendChild(style);
+    }
     /* -------------------------
        Updated Progress Bar Themes – now emoji-only, no text labels
        Emojis are stored in arrays (no duplicates in the array itself)
