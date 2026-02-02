@@ -126,7 +126,7 @@
         },
         seth: {
             gradient: 'linear-gradient(black, #691313)',
-            emojis: ['SETH']
+            emojis: ['SETH', '‎']
         }
     };
     function applyThemeToBar(bar, theme) {
