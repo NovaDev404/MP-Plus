@@ -117,39 +117,50 @@
 
         // Base styles
         bar.style.cssText = `
-            width: ${width};
-            background: ${theme.gradient};
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-            font-size: 18px;
-            line-height: 1;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            padding: 0;
-        `;
+        width: ${width};
+        background: ${theme.gradient};
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        font-size: 18px;
+        line-height: 1;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 0;
+    `;
 
         // Emoji overlay – repeat sequence to fill bar width
         if (theme.emojis && theme.emojis.length > 0) {
-            // Aim for at least 100 emojis in the single segment to cover wide bars without gaps
+            // Create a long line of repeating emojis
             const minEmojisInSingle = 100;
             const repeatsNeeded = Math.ceil(minEmojisInSingle / theme.emojis.length);
             const allEmojisSingle = Array.from({ length: repeatsNeeded }, () => theme.emojis).flat();
             const emojiLine = [...allEmojisSingle, ...allEmojisSingle].join(' ');
 
             bar.innerHTML = `
-                <div style="
-                    display: inline-block;
-                    white-space: nowrap;
-                    animation: scroll 100s linear infinite;
-                ">${emojiLine}</div>
-                <style>
-                    @keyframes scroll {
-                        0%   { transform: translateX(0); }
-                        100% { transform: translateX(-50%); }
-                    }
-                </style>
-            `;
+            <div style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 200%; /* Double width for seamless scrolling */
+                height: 100%;
+                display: flex;
+                align-items: center;
+                white-space: nowrap;
+                animation: scroll 60s linear infinite;
+                pointer-events: none;
+            ">${emojiLine}</div>
+            <style>
+                @keyframes scroll {
+                    0%   { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                div.progress-inner {
+                    position: relative;
+                    overflow: hidden;
+                }
+            </style>
+        `;
         } else {
             bar.innerHTML = ''; // default theme = no emojis
         }
