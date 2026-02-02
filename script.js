@@ -398,8 +398,7 @@
     function enableremoveAnnoying() {
         if (window.__removeAnnoyingEnabled) return console.log('Remove Annoying already enabled');
         window.__removeAnnoyingEnabled = true;
-        try { document.querySelectorAll('.question-blur').forEach(el => el.classList.remove('question-blur')); } catch (e) { }
-        try { document.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove()); } catch (e) { }
+        try { document.querySelectorAll('.cdk-overlay-container').forEach(el => { if (el.textContent.includes('5-second lockout')) el.remove(); }); } catch (e) { }
         try { document.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff')); } catch (e) { }
         const observer = new MutationObserver(mutations => {
             for (const m of mutations) {
@@ -407,7 +406,6 @@
                     try {
                         const t = m.target;
                         if (t && t.classList) {
-                            if (t.classList.contains('question-blur')) t.classList.remove('question-blur');
                             if (t.tagName === 'DIV' && t.classList.contains('red-stuff')) t.classList.remove('red-stuff');
                         }
                     } catch (_) { }
@@ -416,13 +414,11 @@
                     m.addedNodes.forEach(node => {
                         if (!node || node.nodeType !== 1) return;
                         try {
-                            if (node.matches && node.matches('.cdk-overlay-container')) { node.remove(); return; }
+                            if (node.matches && node.matches('.cdk-overlay-container') && node.textContent.includes('5-second lockout')) { node.remove(); return; }
                         } catch (_) { }
-                        try { if (node.classList && node.classList.contains('question-blur')) node.classList.remove('question-blur'); } catch (_) { }
-                        try { node.querySelectorAll && node.querySelectorAll('.question-blur').forEach(el => el.classList.remove('question-blur')); } catch (_) { }
                         try { if (node.tagName === 'DIV' && node.classList && node.classList.contains('red-stuff')) node.classList.remove('red-stuff'); } catch (_) { }
                         try { node.querySelectorAll && node.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff')); } catch (_) { }
-                        try { node.querySelectorAll && node.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove()); } catch (_) { }
+                        try { node.querySelectorAll && node.querySelectorAll('.cdk-overlay-container').forEach(el => { if (el.textContent.includes('5-second lockout')) el.remove(); }); } catch (_) { }
                     });
                 }
             }
@@ -434,7 +430,7 @@
             console.error('Remove Annoying observer failed to start', e);
             window.__removeAnnoyingObserver = null;
         }
-        console.log('Remove Annoying ON — stripping question-blur, removing overlays, and removing red-stuff class from divs');
+        console.log('Remove Annoying ON — stripping removing overlays, and removing red-stuff class from divs');
     }
     function disableremoveAnnoying() {
         if (!window.__removeAnnoyingEnabled) return console.log('Remove Annoying already disabled');
