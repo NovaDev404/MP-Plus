@@ -1,0 +1,110 @@
+{
+  "default": {
+    "displayName": "Default",
+    "gradient": "linear-gradient(rgb(104, 210, 255), rgb(63, 145, 225))",
+    "emojis": [],
+    "animated": false
+  },
+  "brimblecombe_animated": {
+    "displayName": "Brimblecombe Animated",
+    "gradient": "linear-gradient(red, maroon)",
+    "emojis": ["🧡", "🦌", "🔴", "📖", "BRIMBLECOMBE"],
+    "animated": true
+  },
+  "brimblecombe": {
+    "displayName": "Brimblecombe",
+    "gradient": "linear-gradient(red, maroon)",
+    "emojis": [],
+    "animated": false
+  },
+  "baldock_animated": {
+    "displayName": "Baldock Animated",
+    "gradient": "linear-gradient(limegreen, green)",
+    "emojis": ["💚", "⚓", "🟢", "📖", "BALDOCK"],
+    "animated": true
+  },
+  "baldock": {
+    "displayName": "Baldock",
+    "gradient": "linear-gradient(limegreen, green)",
+    "emojis": [],
+    "animated": false
+  },
+  "warren_animated": {
+    "displayName": "Warren Animated",
+    "gradient": "linear-gradient(skyblue, blue)",
+    "emojis": ["💙", "🪖", "🔵", "📖", "WARREN"],
+    "animated": true
+  },
+  "warren": {
+    "displayName": "Warren",
+    "gradient": "linear-gradient(skyblue, blue)",
+    "emojis": [],
+    "animated": false
+  },
+  "white_animated": {
+    "displayName": "White Animated",
+    "gradient": "linear-gradient(yellow, orange)",
+    "emojis": ["💛", "🐦‍🔥", "🟡", "📖", "WHITE"],
+    "animated": true
+  },
+  "white": {
+    "displayName": "White",
+    "gradient": "linear-gradient(yellow, orange)",
+    "emojis": [],
+    "animated": false
+  },
+  "christmas": {
+    "displayName": "Christmas",
+    "gradient": "linear-gradient(white, white, green, red, red)",
+    "emojis": ["🎅", "🎄", "🎁", "☃️", "CHRISTMAS"],
+    "animated": true
+  },
+  "halloween": {
+    "displayName": "Halloween",
+    "gradient": "linear-gradient(white, orange, black)",
+    "emojis": ["🍬", "👻", "👺", "🎃", "HALLOWEEN"],
+    "animated": true
+  },
+  "easter": {
+    "displayName": "Easter",
+    "gradient": "linear-gradient(#FFD1DC, #E3E4FA, #AAF0D1)",
+    "emojis": ["🐤", "🐰", "🥚", "🐣", "EASTER"],
+    "animated": true
+  },
+  "patricks": {
+    "displayName": "St. Patrick's Day",
+    "gradient": "linear-gradient(green, darkgreen, orange)",
+    "emojis": ["🍀", "💰", "☘️", "🪙", "ST PATRICKS DAY"],
+    "animated": true
+  },
+  "ocean": {
+    "displayName": "Ocean Vibes",
+    "gradient": "linear-gradient(#00BCBC, lightblue, lightblue, lightyellow, lightyellow)",
+    "emojis": ["🌊", "⛱️", "🏝️", "🏄", "OCEAN VIBES"],
+    "animated": true
+  },
+  "space": {
+    "displayName": "Space",
+    "gradient": "linear-gradient(black, white, black, lightgray, black, black, gray, black, black, white, black, black, gray, black, black)",
+    "emojis": ["✦", "☆", "🌎", "🛸", "SPACE"],
+    "animated": true
+  },
+  "max": {
+    "displayName": "Max",
+    "gradient": "linear-gradient(red, orange, yellow, green, blue, purple, pink)",
+    "emojis": ["🌈", "🦄", "💗", "🦋", "MAX"],
+    "animated": true
+  },
+  "jonathan": {
+    "displayName": "Jonathan",
+    "gradient": "linear-gradient(green, black, green, darkgreen, black, black, darkgreen, green, black)",
+    "emojis": ["📱", "💻", "😎", "☀️", "JONATHAN"],
+    "animated": true
+  },
+  "seth": {
+    "displayName": "Seth",
+    "gradient": "linear-gradient(#691313, black, #691313)",
+    "emojis": [""],
+    "animated": false
+  }
+}
