@@ -6,6 +6,60 @@
     }
     window.__mpToolsInitialized = true;
     window.mpToolsStateVersion = 3;
+    
+    // Global variable to store loaded themes
+    window.__mpToolsThemes = null;
+    
+    /* -------------------------
+       Theme Loading System
+       ------------------------- */
+    function loadThemesFromGitHub() {
+        return new Promise((resolve, reject) => {
+            // Fetch the latest commit SHA for themes.json
+            fetch('https://api.github.com/repos/NovaDev404/MP-Plus/commits?path=themes.json&per_page=1')
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (!d.length) {
+                        console.error('No commits found for themes.json');
+                        reject('No commits found');
+                        return;
+                    }
+                    
+                    // Load themes.json from jsDelivr with commit SHA
+                    const sha = d[0].sha.substring(0, 7);
+                    const themesUrl = `https://cdn.jsdelivr.net/gh/NovaDev404/MP-Plus@${sha}/themes.json`;
+                    
+                    fetch(themesUrl)
+                        .then(response => response.json())
+                        .then(themesData => {
+                            window.__mpToolsThemes = themesData;
+                            console.log('Themes loaded successfully from GitHub:', themesData);
+                            resolve(themesData);
+                        })
+                        .catch(error => {
+                            console.error('Error loading themes.json:', error);
+                            reject(error);
+                        });
+                })
+                .catch(function (e) {
+                    console.error('Error fetching commit info:', e);
+                    reject(e);
+                });
+        });
+    }
+    
+    function loadDefaultThemes() {
+        // Default theme as fallback
+        return {
+            default: { 
+                displayName: "Default", 
+                gradient: 'linear-gradient(rgb(104, 210, 255), rgb(63, 145, 225))', 
+                emojis: [], 
+                animated: false 
+            }
+        };
+    }
+    
     /* -------------------------
        Persistent global state
        ------------------------- */
@@ -31,13 +85,16 @@
             };
         }
     }
+    
     function saveState() {
         try {
             localStorage.setItem(`__mpToolsState_v${window.mpToolsStateVersion}`, JSON.stringify(window.__mpToolsState || {}));
         } catch (e) { /* ignore */ }
     }
+    
     // init global state
     if (!window.__mpToolsState) loadState();
+    
     // Add global styles for animation
     if (!document.getElementById('mp-tools-animation-styles')) {
         const style = document.createElement('style');
@@ -50,85 +107,27 @@
     `;
         document.head.appendChild(style);
     }
+    
     /* -------------------------
-       Updated Progress Bar Themes – now emoji-only, no text labels
-       Emojis are stored in arrays (no duplicates in the array itself)
-       When rendered, the emoji sequence repeats to fill the full width of the bar
+       Progress Bar Theme System
        ------------------------- */
-    const THEMES = {
-        default: { gradient: 'linear-gradient(rgb(104, 210, 255), rgb(63, 145, 225))', emojis: [] },
-        brimblecombe_animated: {
-            gradient: 'linear-gradient(red, maroon)',
-            emojis: ['🧡', '🦌', '🔴', '📖', 'BRIMBLECOMBE']
-        },
-        brimblecombe: {
-            gradient: 'linear-gradient(red, maroon)',
-            emojis: []
-        },
-
-        baldock_animated: {
-            gradient: 'linear-gradient(limegreen, green)',
-            emojis: ['💚', '⚓', '🟢', '📖', 'BALDOCK']
-        },
-        baldock: {
-            gradient: 'linear-gradient(limegreen, green)',
-            emojis: []
-        },
-
-        warren_animated: {
-            gradient: 'linear-gradient(skyblue, blue)',
-            emojis: ['💙', '🪖', '🔵', '📖', 'WARREN']
-        },
-        warren: {
-            gradient: 'linear-gradient(skyblue, blue)',
-            emojis: []
-        },
-
-        white_animated: {
-            gradient: 'linear-gradient(yellow, orange)',
-            emojis: ['💛', '🐦‍🔥', '🟡', '📖', 'WHITE']
-        },
-        white: {
-            gradient: 'linear-gradient(yellow, orange)',
-            emojis: []
-        },
-        christmas: {
-            gradient: 'linear-gradient(white, white, green, red, red)',
-            emojis: ['🎅', '🎄', '🎁', '☃️', 'CHRISTMAS']
-        },
-        halloween: {
-            gradient: 'linear-gradient(white, orange, black)',
-            emojis: ['🍬', '👻', '👺', '🎃', 'HALLOWEEN']
-        },
-        easter: {
-            gradient: 'linear-gradient(#FFD1DC, #E3E4FA, #AAF0D1)',
-            emojis: ['🐤', '🐰', '🥚', '🐣', 'EASTER']
-        },
-        patricks: {
-            gradient: 'linear-gradient(green, darkgreen, orange)',
-            emojis: ['🍀', '💰', '☘️', '🪙', 'ST PATRICKS DAY']
-        },
-        ocean: {
-            gradient: 'linear-gradient(#00BCBC, lightblue, lightblue, lightyellow, lightyellow)',
-            emojis: ['🌊', '⛱️', '🏝️', '🏄', 'OCEAN VIBES']
-        },
-        space: {
-            gradient: 'linear-gradient(black, white, black, lightgray, black, black, gray, black, black, white, black, black, gray, black, black)',
-            emojis: ['✦', '☆', '🌎', '🛸', 'SPACE']
-        },
-        max: {
-            gradient: 'linear-gradient(red, orange, yellow, green, blue, purple, pink)',
-            emojis: ['🌈', '🦄', '💗', '🦋', 'MAX']
-        },
-        jonathan: {
-            gradient: 'linear-gradient(green, black, green, darkgreen, black, black, darkgreen, green, black)',
-            emojis: ['📱', '💻', '😎', '☀️', 'JONATHAN']
-        },
-        seth: {
-            gradient: 'linear-gradient(#691313, black, #691313)',
-            emojis: ['']
+    function getTheme(themeKey) {
+        if (!window.__mpToolsThemes) {
+            console.warn('Themes not loaded yet, using default themes');
+            window.__mpToolsThemes = loadDefaultThemes();
         }
-    };
+        
+        return window.__mpToolsThemes[themeKey] || window.__mpToolsThemes.default;
+    }
+    
+    function getAllThemeKeys() {
+        if (!window.__mpToolsThemes) {
+            window.__mpToolsThemes = loadDefaultThemes();
+        }
+        
+        return Object.keys(window.__mpToolsThemes);
+    }
+    
     function applyThemeToBar(bar, theme) {
         const width = bar.style.width || '0%';
 
@@ -147,8 +146,8 @@
         position: relative;
     `;
 
-        // Emoji overlay – repeat sequence to fill bar width
-        if (theme.emojis && theme.emojis.length > 0) {
+        // Emoji overlay – repeat sequence to fill bar width (only if animated is true)
+        if (theme.emojis && theme.emojis.length > 0 && theme.animated !== false) {
             // Create a long line of repeating emojis
             const minEmojisInSingle = 100;
             const repeatsNeeded = Math.ceil(minEmojisInSingle / theme.emojis.length);
@@ -168,27 +167,49 @@
                 pointer-events: none;
             ">${emojiLine} ${emojiLine}</div>
         `;
+        } else if (theme.emojis && theme.emojis.length > 0) {
+            // Static emojis (non-animated)
+            const emojiLine = theme.emojis.join(' ');
+            bar.innerHTML = `
+            <div style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                white-space: nowrap;
+                pointer-events: none;
+                padding-left: 10px;
+            ">${emojiLine}</div>
+        `;
         } else {
             bar.innerHTML = ''; // default theme = no emojis
         }
     }
+    
     function applyProgressTheme() {
-        const theme = THEMES[window.__mpToolsState.progressTheme];
+        const theme = getTheme(window.__mpToolsState.progressTheme);
         document.querySelectorAll('div.progress-inner').forEach(bar => applyThemeToBar(bar, theme));
     }
+    
     function cycleProgressTheme() {
-        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white', 'brimblecombe_animated', 'baldock_animated', 'warren_animated', 'white_animated', 'halloween', 'easter', 'christmas', 'patricks', 'ocean', 'space', 'max', 'jonathan', 'seth'];
-        const currentIdx = order.indexOf(window.__mpToolsState.progressTheme);
-        const nextIdx = (currentIdx + 1) % order.length;
-        window.__mpToolsState.progressTheme = order[nextIdx];
+        const themeKeys = getAllThemeKeys();
+        const currentIdx = themeKeys.indexOf(window.__mpToolsState.progressTheme);
+        const nextIdx = (currentIdx + 1) % themeKeys.length;
+        window.__mpToolsState.progressTheme = themeKeys[nextIdx];
         saveState();
         applyProgressTheme();
-        const name = window.__mpToolsState.progressTheme === 'default' ? 'Default' : window.__mpToolsState.progressTheme.toUpperCase();
-        showStatus(`Progress theme: ${name}`, '#ffd700');
+        
+        const theme = getTheme(window.__mpToolsState.progressTheme);
+        const displayName = theme.displayName || window.__mpToolsState.progressTheme.toUpperCase();
+        showStatus(`Progress theme: ${displayName}`, '#ffd700');
     }
+    
     // Double-press detection for Alt+6 menu
     let alt6Presses = 0;
     let alt6Timer = null;
+    
     function handleAlt6() {
         alt6Presses++;
         if (alt6Presses === 1) {
@@ -203,15 +224,18 @@
             alt6Presses = 0;
         }, 400);
     }
+    
     function showProgressThemeMenu() {
         // Remove any existing menu
         const old = document.getElementById('mp-progress-theme-menu');
         if (old) old.remove();
+        
         const menu = document.createElement('div');
         menu.id = 'mp-progress-theme-menu';
         menu.style.cssText = `
             position: fixed;
             max-height: 70dvh;
+            max-width: 90vw;
             overflow-y: auto;
             top: 50%;
             left: 50%;
@@ -225,44 +249,58 @@
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         `;
+        
         menu.innerHTML = `<div style="font-size:18px;font-weight:bold;margin-bottom:15px;">Choose Progress Bar Theme</div>`;
-        Object.keys(THEMES).forEach(key => {
+        
+        const themeKeys = getAllThemeKeys();
+        themeKeys.forEach(key => {
+            const theme = getTheme(key);
+            const displayName = theme.displayName || key.toUpperCase();
+            
             const btn = document.createElement('div');
-            btn.textContent = key === 'default' ? 'Default (Blue)' : key.toUpperCase();
+            btn.textContent = displayName;
             btn.style.cssText = `
                 display: block;
                 width: 100%;
                 padding: 12px;
                 margin: 8px 0;
-                background: ${THEMES[key].gradient};
+                background: ${theme.gradient};
                 color: white;
                 font-weight: bold;
                 border-radius: 8px;
                 cursor: pointer;
                 text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             `;
+            btn.title = displayName;
             btn.onclick = () => {
                 window.__mpToolsState.progressTheme = key;
                 saveState();
                 applyProgressTheme();
-                showStatus(`Progress theme: ${key === 'default' ? 'Default' : key.toUpperCase()}`, '#ffd700');
+                showStatus(`Progress theme: ${displayName}`, '#ffd700');
                 menu.remove();
             };
             menu.appendChild(btn);
         });
+        
         const closeBtn = document.createElement('div');
         closeBtn.textContent = 'Close';
-        closeBtn.style.cssText = 'margin-top:15px;color:#aaa;cursor:pointer;';
+        closeBtn.style.cssText = 'margin-top:15px;color:#aaa;cursor:pointer;padding:10px;';
         closeBtn.onclick = () => menu.remove();
         menu.appendChild(closeBtn);
+        
         document.body.appendChild(menu);
     }
+    
     /* -------------------------
        Status Display Functions
        ------------------------- */
     function showStatus(message, color) {
         const existingStatus = document.getElementById('mp-tools-status');
         if (existingStatus) existingStatus.remove();
+        
         const status = document.createElement('div');
         status.id = 'mp-tools-status';
         status.style.cssText = `
@@ -283,23 +321,28 @@
         `;
         status.textContent = message;
         document.body.appendChild(status);
+        
         setTimeout(() => {
             if (status.parentNode) status.remove();
         }, 2000);
     }
+    
     function showActivated() {
         showStatus('MP-Tools activated', '#3b82f6'); // blue
     }
+    
     /* -------------------------
        Feature Toggle Functions
        ------------------------- */
     window.__mpToolsLastToggle = window.__mpToolsLastToggle || 0;
+    
     function shouldDebounceToggle(ms = 300) {
         const now = Date.now();
         if (now - window.__mpToolsLastToggle < ms) return true;
         window.__mpToolsLastToggle = now;
         return false;
     }
+    
     function toggleSpeedrunner() {
         if (shouldDebounceToggle()) return console.log('toggleSpeedrunner: debounced');
         window.__mpToolsState.speedrunner = !window.__mpToolsState.speedrunner;
@@ -312,6 +355,7 @@
             showStatus('Speedrunner - OFF', '#ef4444');
         }
     }
+    
     function toggleRemoveAnnoying() {
         if (shouldDebounceToggle()) return console.log('toggleRemoveAnnoying: debounced');
         window.__mpToolsState.removeAnnoying = !window.__mpToolsState.removeAnnoying;
@@ -324,6 +368,7 @@
             showStatus('Remove Annoying - OFF', '#ef4444');
         }
     }
+    
     function toggleRightClick() {
         if (shouldDebounceToggle()) return console.log('toggleRightClick: debounced');
         window.__mpToolsState.rightClick = !window.__mpToolsState.rightClick;
@@ -336,6 +381,7 @@
             showStatus('Right Click - OFF', '#ef4444');
         }
     }
+    
     /* -------------------------
        ORIGINAL Feature Implementations (Restored)
        ------------------------- */
@@ -382,6 +428,7 @@
         }
         console.log('Right-click and text selection enabled');
     }
+    
     function disableRightClickAndSelect() {
         if (!window.__rightClickHandler) return console.log('Right click and text selection already disabled');
         document.removeEventListener('contextmenu', window.__rightClickHandler, true);
@@ -399,6 +446,7 @@
         }
         console.log('Right-click and text selection disabled');
     }
+    
     function enableremoveAnnoying() {
         if (window.__removeAnnoyingEnabled) return console.log('Remove Annoying already enabled');
         window.__removeAnnoyingEnabled = true;
@@ -436,12 +484,14 @@
         }
         console.log('Remove Annoying ON — stripping removing overlays, and removing red-stuff class from divs');
     }
+    
     function disableremoveAnnoying() {
         if (!window.__removeAnnoyingEnabled) return console.log('Remove Annoying already disabled');
         window.__removeAnnoyingEnabled = false;
         try { if (window.__removeAnnoyingObserver) { window.__removeAnnoyingObserver.disconnect(); window.__removeAnnoyingObserver = null; } } catch (_) { }
         console.log('Remove Annoying OFF');
     }
+    
     function startSpeedrunner() {
         if (window.__autoClickerRunning) return console.log('Speedrunner already running');
         window.__autoClickerStopRequested = false;
@@ -472,17 +522,15 @@
             }
         })();
     }
+    
     function stopSpeedrunner() {
         window.__autoClickerStopRequested = true;
         window.__autoClickerRunning = false;
         console.log('Stop requested');
     }
+    
     /* -------------------------
        Calculator feature
-       - No close button in header
-       - Toggle via Alt+4
-       - CSS sized to avoid clipping / extra bottom space
-       - Shows "Loading..." until Desmos initialises
        ------------------------- */
     function ensureDesmos() {
         if (window.Desmos) return Promise.resolve();
@@ -497,6 +545,7 @@
         });
         return window.__mp_desmos_loading_promise;
     }
+    
     function initDesmos() {
         try {
             const el = document.getElementById('mp-desmos-body-calc');
@@ -534,6 +583,7 @@
             }
         }
     }
+    
     function openCalculator() {
         const existingPanel = document.getElementById('mp-desmos-panel');
         if (existingPanel) {
@@ -637,6 +687,7 @@
         });
         panel.addEventListener('mousedown', () => { panel.style.zIndex = 2147483648; });
     }
+    
     function destroyCalculatorPanel() {
         try {
             const ld = document.getElementById('mp-desmos-loading');
@@ -654,6 +705,7 @@
         window.__mp_desmos_instance = null;
         console.log('Calculator panel removed');
     }
+    
     function toggleCalculator() {
         if (shouldDebounceToggle()) return console.log('toggleCalculator: debounced');
         const existing = document.getElementById('mp-desmos-panel');
@@ -665,10 +717,9 @@
             showStatus('Calculator - ON', '#10b981');
         }
     }
+    
     /* -------------------------
-       AI Chat (added) — toggle via Alt+5
-       - openOpenAI(), setupChat(), destroyChatPanel(), toggleOpenAI()
-       - NO close button in header; toggled only via Alt+5
+       AI Chat
        ------------------------- */
     function openOpenAI() {
         const existingPanel = document.getElementById('mp-aichat-panel');
@@ -740,6 +791,7 @@
         panel.addEventListener('mousedown', () => { panel.style.zIndex = 2147483648; });
         textarea.focus();
     }
+    
     function destroyChatPanel() {
         try {
             const panel = document.getElementById('mp-aichat-panel');
@@ -753,6 +805,7 @@
         } catch (_) { }
         console.log('AI Chat panel removed');
     }
+    
     function toggleOpenAI() {
         if (shouldDebounceToggle()) return console.log('toggleOpenAI: debounced');
         const existing = document.getElementById('mp-aichat-panel');
@@ -764,6 +817,7 @@
             showStatus('AI Chat - ON', '#10b981');
         }
     }
+    
     function setupChat(messagesArea, input, sendBtn) {
         // NOTE: this uses the key and endpoint the user provided in the snippet.
         const API_KEY = 'csk-nhykr5xjwe495twcvtx383wh3vnyj2n4x9nr26k56mje6jxr';
@@ -889,6 +943,7 @@
             }
         });
     }
+    
     /* -------------------------
        Keyboard Shortcuts Setup (improved)
        ------------------------- */
@@ -941,20 +996,37 @@
             }
         }, true);
     }
+    
     /* -------------------------
        Initialize on load
        ------------------------- */
-    function initialize() {
+    async function initialize() {
         showActivated();
         setupKeyboardShortcuts();
+        
+        // Load themes from GitHub (falls back to default if fails)
+        try {
+            await loadThemesFromGitHub();
+            console.log('Themes loaded successfully from GitHub');
+        } catch (error) {
+            console.warn('Failed to load themes from GitHub, using default themes:', error);
+            window.__mpToolsThemes = loadDefaultThemes();
+        }
+        
+        // Apply initial theme
         applyProgressTheme();
+        
+        // Initialize features based on saved state
         if (window.__mpToolsState.speedrunner) startSpeedrunner();
         if (window.__mpToolsState.rightClick) enableRightClickAndSelect();
         if (window.__mpToolsState.removeAnnoying) enableremoveAnnoying();
+        
         console.log('MP-Tools activated - Use Alt+1, Alt+2, Alt+3 to toggle features; Alt+4 toggles Calculator; Alt+5 toggles AI Chat; Alt+6 for progress theme (single press cycles, double press opens menu)');
     }
+    
     // Run initialization
     initialize();
+    
     /* -------------------------
        Minimal helpers (UI used by other code)
        ------------------------- */
