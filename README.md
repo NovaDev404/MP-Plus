@@ -15,3 +15,4 @@ javascript:(function(){fetch('https://api.github.com/repos/SuperGamer474/MP-Plus
    - `3` to toggle the 'right click' feature, which re-enables the blocked right clicking, and enables selecting more text.
    - `4` to toggle the calculator.
    - `5` to toggle the AI chat.
+   - `6` to change progress bar theme. Double tap the 6 to open the selection menu.
