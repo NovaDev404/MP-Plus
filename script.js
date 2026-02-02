@@ -125,7 +125,7 @@
             emojis: ['📱', '💻', '😎', '☀️', 'JONATHAN']
         },
         seth: {
-            gradient: 'black',
+            gradient: 'linear-gradient(black, bloodred)',
             emojis: ['']
         }
     };
