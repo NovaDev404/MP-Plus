@@ -43,56 +43,75 @@
        When rendered, the emoji sequence repeats to fill the full width of the bar
        ------------------------- */
     const THEMES = {
-        default: { gradient: 'linear-gradient(rgb(104, 210, 255), rgb(63, 145, 225))', emojis: [] }, // no overlay emojis
+        default: { gradient: 'linear-gradient(rgb(104, 210, 255), rgb(63, 145, 225))', emojis: [] },
+        brimblecombe_a: {
+            gradient: 'linear-gradient(red, maroon)',
+            emojis: ['🧡', '🦌', '🔴', '📖', 'BRIMBLECOMBE']
+        },
         brimblecombe: {
             gradient: 'linear-gradient(red, maroon)',
-            emojis: ['🧡','🦌','🔴','📖', 'BRIMBLECOMBE']
+            emojis: []
+        },
+
+        baldock_a: {
+            gradient: 'linear-gradient(limegreen, green)',
+            emojis: ['💚', '⚓', '🟢', '📖', 'BALDOCK']
         },
         baldock: {
             gradient: 'linear-gradient(limegreen, green)',
-            emojis: ['💚','⚓','🟢','📖', 'BALDOCK']
+            emojis: []
+        },
+
+        warren_a: {
+            gradient: 'linear-gradient(skyblue, blue)',
+            emojis: ['💙', '🪖', '🔵', '📖', 'WARREN']
         },
         warren: {
             gradient: 'linear-gradient(skyblue, blue)',
-            emojis: ['💙','🪖','🔵','📖', 'WARREN']
+            emojis: []
+        },
+
+        white_a: {
+            gradient: 'linear-gradient(yellow, orange)',
+            emojis: ['💛', '🐦‍🔥', '🟡', '📖', 'WHITE']
         },
         white: {
             gradient: 'linear-gradient(yellow, orange)',
-            emojis: ['💛','🐦‍🔥','🟡','📖', 'WHITE']
+            emojis: []
         },
         christmas: {
             gradient: 'linear-gradient(white, white, green, red, red)',
-            emojis: ['🎅','🎄','🎁','☃️', 'CHRISTMAS']
+            emojis: ['🎅', '🎄', '🎁', '☃️', 'CHRISTMAS']
         },
         halloween: {
             gradient: 'linear-gradient(white, orange, black)',
-            emojis: ['🍬','👻','👺','🎃', 'HALLOWEEN']
+            emojis: ['🍬', '👻', '👺', '🎃', 'HALLOWEEN']
         },
         easter: {
             gradient: 'linear-gradient(#FFD1DC, #E3E4FA, #AAF0D1)',
-            emojis: ['🐤','🐰','🥚','🐣', 'EASTER']
+            emojis: ['🐤', '🐰', '🥚', '🐣', 'EASTER']
         },
         patricks: {
             gradient: 'linear-gradient(green, darkgreen, orange)',
-            emojis: ['🍀','💰','☘️','🪙', 'ST PATRICKS DAY']
+            emojis: ['🍀', '💰', '☘️', '🪙', 'ST PATRICKS DAY']
         },
         ocean: {
             gradient: 'linear-gradient(#00BCBC, lightblue, lightblue, lightyellow, lightyellow)',
-            emojis: ['🌊','⛱️','🏝️','🏄','OCEAN VIBES']
+            emojis: ['🌊', '⛱️', '🏝️', '🏄', 'OCEAN VIBES']
         },
-         space: {
+        space: {
             gradient: 'linear-gradient(black, white, black, lightgray, black, black, gray, black, black, white, black, black, gray, black, black)',
             emojis: ['✦', '☆', '🌎', '🛸', 'SPACE']
         },
-         max: {
+        max: {
             gradient: 'linear-gradient(red, orange, yellow, green, blue, purple, pink)',
             emojis: ['🌈', '🦄', '💗', '🦋', 'MAX']
         },
-         jonathan: {
+        jonathan: {
             gradient: 'linear-gradient(green, black, green, darkgreen, black, black, darkgreen, green, black)',
             emojis: ['📱', '💻', '😎', '☀️', 'JONATHAN']
         }
-       };
+    };
     function applyThemeToBar(bar, theme) {
         const width = bar.style.width || '0%';
 
@@ -115,7 +134,7 @@
             // Aim for at least 100 emojis in the single segment to cover wide bars without gaps
             const minEmojisInSingle = 100;
             const repeatsNeeded = Math.ceil(minEmojisInSingle / theme.emojis.length);
-            const allEmojisSingle = Array.from({length: repeatsNeeded}, () => theme.emojis).flat();
+            const allEmojisSingle = Array.from({ length: repeatsNeeded }, () => theme.emojis).flat();
             const emojiLine = [...allEmojisSingle, ...allEmojisSingle].join(' ');
 
             bar.innerHTML = `
@@ -325,7 +344,7 @@
                         element.style.msUserSelect = 'auto';
                     }
                 }
-            } catch (_) {}
+            } catch (_) { }
         });
         const events = ['selectstart', 'dragstart'];
         events.forEach(eventType => {
@@ -357,7 +376,7 @@
             window.__textSelectHandler = null;
         }
         if (window.__selectionStyle) {
-            try { window.__selectionStyle.remove(); } catch (_) {}
+            try { window.__selectionStyle.remove(); } catch (_) { }
             window.__selectionStyle = null;
         }
         console.log('Right-click and text selection disabled');
@@ -365,9 +384,9 @@
     function enableremoveAnnoying() {
         if (window.__removeAnnoyingEnabled) return console.log('Remove Annoying already enabled');
         window.__removeAnnoyingEnabled = true;
-        try { document.querySelectorAll('.question-blur').forEach(el => el.classList.remove('question-blur')); } catch(e){}
-        try { document.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove()); } catch(e){}
-        try { document.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff')); } catch(e){}
+        try { document.querySelectorAll('.question-blur').forEach(el => el.classList.remove('question-blur')); } catch (e) { }
+        try { document.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove()); } catch (e) { }
+        try { document.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff')); } catch (e) { }
         const observer = new MutationObserver(mutations => {
             for (const m of mutations) {
                 if (m.type === 'attributes' && m.attributeName === 'class') {
@@ -377,19 +396,19 @@
                             if (t.classList.contains('question-blur')) t.classList.remove('question-blur');
                             if (t.tagName === 'DIV' && t.classList.contains('red-stuff')) t.classList.remove('red-stuff');
                         }
-                    } catch (_) {}
+                    } catch (_) { }
                 }
                 if (m.type === 'childList') {
                     m.addedNodes.forEach(node => {
                         if (!node || node.nodeType !== 1) return;
                         try {
                             if (node.matches && node.matches('.cdk-overlay-container')) { node.remove(); return; }
-                        } catch (_) {}
-                        try { if (node.classList && node.classList.contains('question-blur')) node.classList.remove('question-blur'); } catch(_) {}
-                        try { node.querySelectorAll && node.querySelectorAll('.question-blur').forEach(el => el.classList.remove('question-blur')); } catch(_) {}
-                        try { if (node.tagName === 'DIV' && node.classList && node.classList.contains('red-stuff')) node.classList.remove('red-stuff'); } catch(_) {}
-                        try { node.querySelectorAll && node.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff')); } catch(_) {}
-                        try { node.querySelectorAll && node.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove()); } catch(_) {}
+                        } catch (_) { }
+                        try { if (node.classList && node.classList.contains('question-blur')) node.classList.remove('question-blur'); } catch (_) { }
+                        try { node.querySelectorAll && node.querySelectorAll('.question-blur').forEach(el => el.classList.remove('question-blur')); } catch (_) { }
+                        try { if (node.tagName === 'DIV' && node.classList && node.classList.contains('red-stuff')) node.classList.remove('red-stuff'); } catch (_) { }
+                        try { node.querySelectorAll && node.querySelectorAll('div.red-stuff').forEach(el => el.classList.remove('red-stuff')); } catch (_) { }
+                        try { node.querySelectorAll && node.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove()); } catch (_) { }
                     });
                 }
             }
@@ -406,7 +425,7 @@
     function disableremoveAnnoying() {
         if (!window.__removeAnnoyingEnabled) return console.log('Remove Annoying already disabled');
         window.__removeAnnoyingEnabled = false;
-        try { if (window.__removeAnnoyingObserver) { window.__removeAnnoyingObserver.disconnect(); window.__removeAnnoyingObserver = null; } } catch(_) {}
+        try { if (window.__removeAnnoyingObserver) { window.__removeAnnoyingObserver.disconnect(); window.__removeAnnoyingObserver = null; } } catch (_) { }
         console.log('Remove Annoying OFF');
     }
     function startSpeedrunner() {
@@ -427,9 +446,9 @@
                 while (!window.__autoClickerStopRequested) {
                     try {
                         (await wait('div.bottom-button.card-button.check-button.flex.items-center.relative.right-button.round-button',
-                                    'Check my answer')).click();
+                            'Check my answer')).click();
                         (await wait('div.next-button.ph3.pv2.card-button.round-button.bottom-button.left-button.flex.items-center.mr2',
-                                    'Complete question')).click();
+                            'Complete question')).click();
                         await sleep(3000);
                     } catch (e) { await sleep(1000); }
                 }
@@ -472,7 +491,7 @@
             const preLoad = document.getElementById('mp-desmos-loading');
             if (preLoad) preLoad.remove();
             if (window.__mp_desmos_instance) {
-                try { if (typeof window.__mp_desmos_instance.update === 'function') window.__mp_desmos_instance.update(); } catch(_) {}
+                try { if (typeof window.__mp_desmos_instance.update === 'function') window.__mp_desmos_instance.update(); } catch (_) { }
                 return;
             }
             window.__mp_desmos_instance = Desmos && Desmos.ScientificCalculator
@@ -608,16 +627,16 @@
         try {
             const ld = document.getElementById('mp-desmos-loading');
             if (ld) ld.remove();
-        } catch(_) {}
+        } catch (_) { }
         try {
             const panel = document.getElementById('mp-desmos-panel');
             if (panel) panel.remove();
-        } catch (_) {}
+        } catch (_) { }
         try {
             if (window.__mp_desmos_instance && typeof window.__mp_desmos_instance.destroy === 'function') {
                 window.__mp_desmos_instance.destroy();
             }
-        } catch (_) {}
+        } catch (_) { }
         window.__mp_desmos_instance = null;
         console.log('Calculator panel removed');
     }
@@ -711,13 +730,13 @@
         try {
             const panel = document.getElementById('mp-aichat-panel');
             if (panel) panel.remove();
-        } catch (_) {}
+        } catch (_) { }
         try {
             if (window.__mp_chat_controller) {
-                try { window.__mp_chat_controller.abort(); } catch(_) {}
+                try { window.__mp_chat_controller.abort(); } catch (_) { }
                 window.__mp_chat_controller = null;
             }
-        } catch(_) {}
+        } catch (_) { }
         console.log('AI Chat panel removed');
     }
     function toggleOpenAI() {
@@ -783,7 +802,7 @@
             messagesArea.appendChild(assistantBubble);
             scrollToBottom();
             if (currentController) {
-                try { currentController.abort(); } catch(_) {}
+                try { currentController.abort(); } catch (_) { }
             }
             const controller = new AbortController();
             currentController = controller;
@@ -866,7 +885,7 @@
         }
         window.__mpToolsKeyboardSetup = true;
         window.__mpToolsLastKeyAt = window.__mpToolsLastKeyAt || 0;
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             const now = Date.now();
             if (now - window.__mpToolsLastKeyAt < 150) return;
             const isDigit1 = e.code === 'Digit1' || e.key === '1';
