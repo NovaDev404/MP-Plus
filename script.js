@@ -123,6 +123,10 @@
         jonathan: {
             gradient: 'linear-gradient(green, black, green, darkgreen, black, black, darkgreen, green, black)',
             emojis: ['📱', '💻', '😎', '☀️', 'JONATHAN']
+        },
+        seth: {
+            gradient: 'black',
+            emojis: ['']
         }
     };
     function applyThemeToBar(bar, theme) {
@@ -173,7 +177,7 @@
         document.querySelectorAll('div.progress-inner').forEach(bar => applyThemeToBar(bar, theme));
     }
     function cycleProgressTheme() {
-        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white', 'brimblecombe_animated', 'baldock_animated', 'warren_animated', 'white_animated', 'halloween', 'easter', 'christmas', 'patricks', 'ocean', 'space', 'max', 'jonathan'];
+        const order = ['default', 'brimblecombe', 'baldock', 'warren', 'white', 'brimblecombe_animated', 'baldock_animated', 'warren_animated', 'white_animated', 'halloween', 'easter', 'christmas', 'patricks', 'ocean', 'space', 'max', 'jonathan', 'seth'];
         const currentIdx = order.indexOf(window.__mpToolsState.progressTheme);
         const nextIdx = (currentIdx + 1) % order.length;
         window.__mpToolsState.progressTheme = order[nextIdx];
