@@ -127,6 +127,7 @@
         display: flex;
         align-items: center;
         padding: 0;
+        position: relative;
     `;
 
         // Emoji overlay – repeat sequence to fill bar width
@@ -135,31 +136,20 @@
             const minEmojisInSingle = 100;
             const repeatsNeeded = Math.ceil(minEmojisInSingle / theme.emojis.length);
             const allEmojisSingle = Array.from({ length: repeatsNeeded }, () => theme.emojis).flat();
-            const emojiLine = [...allEmojisSingle, ...allEmojisSingle].join(' ');
+            const emojiLine = allEmojisSingle.join(' ');
 
             bar.innerHTML = `
             <div style="
                 position: absolute;
                 top: 0;
                 left: 0;
-                width: 200%; /* Double width for seamless scrolling */
                 height: 100%;
                 display: flex;
                 align-items: center;
                 white-space: nowrap;
-                animation: scroll 60s linear infinite;
+                animation: mp-scroll 30s linear infinite;
                 pointer-events: none;
-            ">${emojiLine}</div>
-            <style>
-                @keyframes scroll {
-                    0%   { transform: translateX(0); }
-                    100% { transform: translateX(-50%); }
-                }
-                div.progress-inner {
-                    position: relative;
-                    overflow: hidden;
-                }
-            </style>
+            ">${emojiLine} ${emojiLine}</div>
         `;
         } else {
             bar.innerHTML = ''; // default theme = no emojis
