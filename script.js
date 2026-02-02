@@ -5,12 +5,13 @@
         return;
     }
     window.__mpToolsInitialized = true;
+    window.mpToolsStateVersion = 3;
     /* -------------------------
        Persistent global state
        ------------------------- */
     function loadState() {
         try {
-            const raw = localStorage.getItem('__mpToolsState_v2');
+            const raw = localStorage.getItem(`__mpToolsState_v${window.mpToolsStateVersion}`);
             if (raw) {
                 window.__mpToolsState = JSON.parse(raw);
             } else {
@@ -32,7 +33,7 @@
     }
     function saveState() {
         try {
-            localStorage.setItem('__mpToolsState_v2', JSON.stringify(window.__mpToolsState || {}));
+            localStorage.setItem(`__mpToolsState_v${window.mpToolsStateVersion}`, JSON.stringify(window.__mpToolsState || {}));
         } catch (e) { /* ignore */ }
     }
     // init global state
