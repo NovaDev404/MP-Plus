@@ -159,7 +159,7 @@
                 display: flex;
                 align-items: center;
                 white-space: nowrap;
-                animation: mp-scroll 30s linear infinite;
+                animation: mp-scroll 100s linear infinite;
                 pointer-events: none;
             ">${emojiLine} ${emojiLine}</div>
         `;
