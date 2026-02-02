@@ -44,7 +44,7 @@
        ------------------------- */
     const THEMES = {
         default: { gradient: 'linear-gradient(rgb(104, 210, 255), rgb(63, 145, 225))', emojis: [] },
-        brimblecombe_a: {
+        brimblecombe_animated: {
             gradient: 'linear-gradient(red, maroon)',
             emojis: ['🧡', '🦌', '🔴', '📖', 'BRIMBLECOMBE']
         },
@@ -53,7 +53,7 @@
             emojis: []
         },
 
-        baldock_a: {
+        baldock_animated: {
             gradient: 'linear-gradient(limegreen, green)',
             emojis: ['💚', '⚓', '🟢', '📖', 'BALDOCK']
         },
@@ -62,7 +62,7 @@
             emojis: []
         },
 
-        warren_a: {
+        warren_animated: {
             gradient: 'linear-gradient(skyblue, blue)',
             emojis: ['💙', '🪖', '🔵', '📖', 'WARREN']
         },
@@ -71,7 +71,7 @@
             emojis: []
         },
 
-        white_a: {
+        white_animated: {
             gradient: 'linear-gradient(yellow, orange)',
             emojis: ['💛', '🐦‍🔥', '🟡', '📖', 'WHITE']
         },
