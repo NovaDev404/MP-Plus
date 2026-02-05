@@ -820,7 +820,7 @@
     
     function setupChat(messagesArea, input, sendBtn) {
         // NOTE: this uses the key and endpoint the user provided in the snippet.
-        const API_KEY = 'csk-nhykr5xjwe495twcvtx383wh3vnyj2n4x9nr26k56mje6jxr';
+        const API_KEY = 'csk-cf6kw85mdt5t53fkm9f5wdc4tkk8m2rf6dw9xfevvf3tt2yc';
         const ENDPOINT = 'https://api.cerebras.ai/v1/chat/completions';
         const MODEL = 'gpt-oss-120b';
         const SYSTEM_MESSAGE = "You are a friendly chatbot called MP Helper. You help with maths problems. MP stands for Math Pathways, as this is the program you are in. NEVER respond with math displaystyles or markdown, ONLY respond with plaintext. NEVER use displaystyle or math format or markdown. You are a part of MP Tools, a tool system for Math Pathways. For example, INSTEAD of doing this: (1 div 1 = 1), do THIS: 1/1 = 1 NEVER use math formatter. So, NEVER use LaTeX-style display math, instead always write math in plain text. Use emojis, NO MARKDOWN, and be excited and ready to help. Keep your responses short except if the user asks a maths problem walk them through it step by step.";
